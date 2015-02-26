@@ -1,6 +1,7 @@
 package actor;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,7 +21,7 @@ import akka.japi.Creator;
 public class SessionActor extends UntypedActor
 {
   private final Map< String, String > sectors = new HashMap<>();
-  private final Map< String, ActorRef > subscribers = new HashMap<>();
+  private final Map< ActorRef, String > subscribers = new HashMap<>();
 
 
   public static Props props()
@@ -130,7 +131,7 @@ public class SessionActor extends UntypedActor
 
   private Optional< String > getUserNameOfSender(ActorRef sender)
   {
-    return getKeyByValue(subscribers, sender);
+    return Optional.ofNullable(subscribers.get(sender));
   }
 
 
@@ -143,19 +144,19 @@ public class SessionActor extends UntypedActor
   private void handleSubscription(Subscribe subscribe)
   {
     Logger.info("Received subscription: " + subscribe.userName);
-    subscribers.put(subscribe.userName, getSender());
+    subscribers.put( getSender(),subscribe.userName);
     sendAssignementState();
   }
 
 
   private void sendAssignementState()
   {
-    Set< String > userNames = subscribers.keySet();
-    for (String userName: userNames)
+    Set<ActorRef> subscribersList = subscribers.keySet();
+    for (ActorRef subscriber: subscribersList)
     {
+      String userName = subscribers.get(subscriber);
       Sectors sectorStates = getSectorStates(userName);
-      ActorRef actorRef = subscribers.get(userName);
-      actorRef.tell(sectorStates, getSelf());
+      subscriber.tell(sectorStates, getSelf());
     }
   }
 

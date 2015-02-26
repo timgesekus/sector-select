@@ -1,19 +1,14 @@
 package actor;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import play.Logger;
 import actor.messages.Sectors;
 import actor.messages.Subscribe;
 import akka.actor.ActorRef;
 import akka.actor.Props;
 import akka.actor.UntypedActor;
-import akka.japi.Creator;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import play.Logger;
 
 public class SectorListActor extends UntypedActor {
 

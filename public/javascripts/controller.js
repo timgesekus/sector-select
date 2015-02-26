@@ -5,7 +5,7 @@ sectorSelectApp.factory('SectorListService', function() {
  
   service.connect = function() {
     if(service.ws) { return; }
-    var websocketUrl = jsRoutes.controllers.SectorList.sectors("Tim Gesekus").webSocketURL();
+    var websocketUrl = jsRoutes.controllers.SectorList.sectors().webSocketURL();
     var ws = new WebSocket(websocketUrl);
  
     ws.onopen = function() {

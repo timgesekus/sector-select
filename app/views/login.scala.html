@@ -1,0 +1,8 @@
+@(myForm: Form[Application.User]) @main("Welcome to the sector select room") {
+
+@helper.form(action = routes.Application.loginSubmit()) {
+    @helper.inputText(myForm("userName"))
+    @helper.inputPassword(myForm("password"))
+    <input type="submit" value="send"/>
+}
+}

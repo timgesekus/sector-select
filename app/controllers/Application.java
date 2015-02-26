@@ -1,14 +1,58 @@
 package controllers;
 
-import play.*;
-import play.mvc.*;
-
-import views.html.*;
+import play.Logger;
+import play.data.Form;
+import play.mvc.Controller;
+import play.mvc.Result;
+import views.html.index;
+import be.objectify.deadbolt.java.actions.SubjectPresent;
+import play.data.validation.Constraints;
 
 public class Application extends Controller {
+	static Form<User> userForm = Form.form(User.class);
 
-    public static Result index() {
-        return ok(index.render("Your new application is ready."));
-    }
+	@SubjectPresent
+	public static Result index() {
+		return ok(index.render("Your new application is ready."));
+	}
 
+	public static Result login() {
+		return ok(views.html.login.render(userForm));
+	}
+
+	public static Result loginSubmit() {
+		Logger.info(request().body().toString());
+		Form<User> filledUserForm = userForm.bindFromRequest();
+		if (filledUserForm.hasErrors()) {
+			return badRequest("Somethings missing");
+		} else {
+			User user = filledUserForm.get();
+			session("userName",user.getUserName());
+			return ok(index.render("Hallo"));
+		}
+	}
+
+	public static class User {
+		@Constraints.Required
+		private String userName;
+		@Constraints.Required
+		private String password;
+
+		public String getUserName() {
+			return userName;
+		}
+
+		public void setUserName(String userName) {
+			this.userName = userName;
+		}
+
+		public String getPassword() {
+			return password;
+		}
+
+		public void setPassword(String password) {
+			this.password = password;
+		}
+
+	}
 }
