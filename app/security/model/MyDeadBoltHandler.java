@@ -1,5 +1,6 @@
 package security.model;
 
+import controllers.Application;
 import model.AuthorisedUser;
 import play.libs.F;
 import play.libs.F.Promise;
@@ -27,6 +28,14 @@ public class MyDeadBoltHandler extends AbstractDeadboltHandler {
 			return (null);
 		}
 
+	}
+
+	@Override
+	public Promise<Result> onAuthFailure(Context context, String content) {
+		Promise<Result> promise = F.Promise.promise(() -> {
+			return Application.login();
+		});
+		return promise;
 	}
 
 }

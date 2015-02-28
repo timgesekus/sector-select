@@ -1,16 +1,22 @@
 package actor;
 
+import java.io.IOException;
+
 import play.Logger;
 import actor.messages.Sectors;
 import actor.messages.Subscribe;
+import akka.actor.AbstractActor;
 import akka.actor.ActorRef;
 import akka.actor.Props;
 import akka.actor.UntypedActor;
+import akka.japi.pf.ReceiveBuilder;
 
+import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-public class SectorListActor extends UntypedActor {
+public class SectorListActor extends AbstractActor {
 
 	private final ObjectMapper objectMapper;
 
@@ -23,7 +29,7 @@ public class SectorListActor extends UntypedActor {
 	private String userName;
 
 	public SectorListActor(ActorRef out, String userName, ActorRef sessionActor)
-			throws JsonProcessingException {
+	  throws JsonProcessingException {
 		this.out = out;
 		this.userName = userName;
 		this.sessionActor = sessionActor;
@@ -31,25 +37,32 @@ public class SectorListActor extends UntypedActor {
 		objectMapper = new ObjectMapper();
 		subscribeToSession();
 
+		receive(ReceiveBuilder
+		  .match(String.class, this::receiveJsonFromSocket)
+		  .match(Sectors.class, this::receiveSectors)
+		  .build());
+
 	}
 
 	private void subscribeToSession() {
 		sessionActor.tell(new Subscribe(userName), self());
 	}
 
-	public void onReceive(Object message) throws Exception {
-		if (message instanceof String) {
-			Logger.info("Received a message:" + message);
-			Event readValue = objectMapper.readValue((String) message,Event.class);
-			sessionActor.tell(readValue, getSelf());
-		}
+	public void receiveJsonFromSocket(String json)
+	  throws JsonParseException,
+	  JsonMappingException,
+	  IOException {
+		Logger.info("Received a message:" + json);
+		Event readValue;
+		readValue = objectMapper.readValue((String) json, Event.class);
+		sessionActor.tell(readValue, self());
 
-		if (message instanceof Sectors) {
-			Sectors sectors = (Sectors)  message;
-			Logger.info("Received a sectors message " + sectors.sectors.size() );
-			String sectorsAsJson = objectMapper.writeValueAsString(message);
-			out.tell(sectorsAsJson, self());
-		}
+	}
+
+	public void receiveSectors(Sectors sectors) throws JsonProcessingException {
+		Logger.info("Received a sectors message " + sectors.sectors.size());
+		String sectorsAsJson = objectMapper.writeValueAsString(sectors);
+		out.tell(sectorsAsJson, self());
 	}
 
 	public static class PropCreater {
@@ -62,14 +75,17 @@ public class SectorListActor extends UntypedActor {
 		}
 
 		public Props props(ActorRef out) {
-			return Props.create(SectorListActor.class, out, userName,
-					sessionActor);
+			return Props.create(SectorListActor.class, out, userName, sessionActor);
 		}
 
 	}
 
 	public static class Event {
-		public String eventName;
+		public String topic;
 		public String sector;
+
+		public Event() {
+			topic = "event";
+		}
 	}
 }

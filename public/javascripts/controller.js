@@ -1,46 +1,10 @@
-var sectorSelectApp = angular.module('sectorSelectApp', []);
+var sectorSelectApp = angular.module('sectorSelectApp',  ['websocketmodule']);
 
-sectorSelectApp.factory('SectorListService', function() {
-  var service = {};
- 
-  service.connect = function() {
-    if(service.ws) { return; }
-    var websocketUrl = jsRoutes.controllers.SectorList.sectors().webSocketURL();
-    var ws = new WebSocket(websocketUrl);
- 
-    ws.onopen = function() {
-    	console.log("Connected");
-    	// service.callback("Succeeded to open a connection");
-    };
- 
-    ws.onerror = function() {
-      // service.callback("Failed to open a connection");
-    }
- 
-    ws.onmessage = function(message) {
-    	console.log("Got message:" + message.data);
-    	service.callback(JSON.parse(message.data));
-    };
- 
-    service.ws = ws;
-  }
- 
-  service.send = function(message) {
-    service.ws.send(JSON.stringify(message));
-  }
- 
-  service.subscribe = function(callback) {
-    service.callback = callback;
-  }
- 
-  return service;
-});
-
-sectorSelectApp.controller('SectorSelectController', function($scope, SectorListService) {
+sectorSelectApp.controller('SectorSelectController',['$scope','websocketService', function($scope, websocketService) {
   $scope.sectors = [
        ];
  
-  SectorListService.subscribe(function(event) {
+  websocketService.subscribe("sectors",function(event) {
     	$scope.sectors = event.sectors;
       $scope.$apply();  	
  });
@@ -49,11 +13,11 @@ sectorSelectApp.controller('SectorSelectController', function($scope, SectorList
 		
 		console.log("event:" +  sectorName);
 		var selectEvent = {
-				eventName : "select",
+				topic : "select",
 				sector :sectorName
 		};
 		
-		SectorListService.send(selectEvent)
+		websocketService.send(selectEvent)
 	};
 	
 	$scope.delete = function ( idx ) {
@@ -62,8 +26,8 @@ sectorSelectApp.controller('SectorSelectController', function($scope, SectorList
 				eventName : "Remove",
 				"item" : item
 		};
-		SectorListService.send(event)
+		websocketService.send(event)
 	};
 	
-	SectorListService.connect();
-});
+	websocketService.connect(jsRoutes.controllers.SectorList.sectors().webSocketURL());
+}]);

@@ -12,7 +12,7 @@ import be.objectify.deadbolt.java.actions.SubjectNotPresent;
 
 public class SectorList extends Controller {
 	private static ActorRef sessionActor = Akka.system().actorOf(
-			SessionActor.props());
+	  SessionActor.props());
 
 	@SubjectNotPresent(content = "String")
 	public static WebSocket<String> sectors() {
@@ -20,12 +20,12 @@ public class SectorList extends Controller {
 		if (userName != null) {
 			play.Logger.info("username " + userName);
 			PropCreater propCreater = new SectorListActor.PropCreater(
-					sessionActor, userName);
+			  sessionActor,
+			  userName);
 			return WebSocket.withActor(propCreater::props);
 		} else {
 			return WebSocketUtils.notAuthorizedWebSocket();
 		}
 	}
 
-	
 }

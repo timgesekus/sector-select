@@ -20,6 +20,12 @@ public class Application extends Controller {
 		return ok(views.html.login.render(userForm));
 	}
 
+	public static Result logout() {
+		session().remove("userName");
+		return redirect(routes.Application.login());
+
+	}
+
 	public static Result loginSubmit() {
 		Logger.info(request().body().toString());
 		Form<User> filledUserForm = userForm.bindFromRequest();
@@ -27,8 +33,8 @@ public class Application extends Controller {
 			return badRequest("Somethings missing");
 		} else {
 			User user = filledUserForm.get();
-			session("userName",user.getUserName());
-			return ok(index.render("Hallo"));
+			session("userName", user.getUserName());
+			return redirect(routes.Application.index());
 		}
 	}
 

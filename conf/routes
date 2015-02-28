@@ -6,7 +6,11 @@
 GET     /                           controllers.Application.index()
 GET     /sectors                    controllers.SectorList.sectors()
 GET     /login                      controllers.Application.login()
-POST    /loginSubmit/                controllers.Application.loginSubmit()
+GET     /logout                     controllers.Application.logout()
+GET     /exerciseSelect             controllers.ExerciseSelection.exerciseSelect()
+GET     /groups                     controllers.ExerciseSelection.groups()
+
+POST    /loginSubmit/               controllers.Application.loginSubmit()
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)
