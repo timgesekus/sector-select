@@ -1,6 +1,6 @@
-var sectorSelectApp = angular.module('sectorSelectApp',  ['websocketmodule']);
+var joinSessionApp = angular.module('joinSessionApp',  ['websocketmodule']);
 
-sectorSelectApp.controller('SectorSelectController',['$scope','websocketService', function($scope, websocketService) {
+joinSessionApp.controller('JoinSessionController',['$scope','websocketService', function($scope, websocketService) {
   $scope.sectors = [
        ];
  
@@ -28,6 +28,6 @@ sectorSelectApp.controller('SectorSelectController',['$scope','websocketService'
 		};
 		websocketService.send(event)
 	};
-	
-	websocketService.connect(jsRoutes.controllers.SectorList.sectors().webSocketURL());
+	var sessionId = $("#session").data("sessionid");
+	websocketService.connect(jsRoutes.controllers.JoinSession.joinSessionWS(sessionId).webSocketURL());
 }]);

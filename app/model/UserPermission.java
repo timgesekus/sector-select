@@ -1,11 +1,11 @@
 package model;
 
-import be.objectify.deadbolt.core.models.Permission;
-import play.db.ebean.Model;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+
+import play.db.ebean.Model;
+import be.objectify.deadbolt.core.models.Permission;
 
 @Entity
 public class UserPermission extends Model implements Permission {

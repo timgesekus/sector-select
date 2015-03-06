@@ -2,19 +2,14 @@ package controllers;
 
 import play.Logger;
 import play.data.Form;
+import play.data.validation.Constraints;
 import play.mvc.Controller;
 import play.mvc.Result;
-import views.html.index;
-import be.objectify.deadbolt.java.actions.SubjectPresent;
-import play.data.validation.Constraints;
 
 public class Application extends Controller {
 	static Form<User> userForm = Form.form(User.class);
 
-	@SubjectPresent
-	public static Result index() {
-		return ok(index.render("Your new application is ready."));
-	}
+	
 
 	public static Result login() {
 		return ok(views.html.login.render(userForm));
@@ -34,7 +29,7 @@ public class Application extends Controller {
 		} else {
 			User user = filledUserForm.get();
 			session("userName", user.getUserName());
-			return redirect(routes.Application.index());
+			return redirect(routes.ExerciseSelection.exerciseSelect());
 		}
 	}
 

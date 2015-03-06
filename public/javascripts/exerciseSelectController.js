@@ -4,6 +4,11 @@ exerciseSelectApp.controller('exerciseSelectController',['$scope','websocketServ
   $scope.sectors = [
        ];
  
+  
+  websocketService.subscribe("redirect",function(event) {
+  	window.location.href = event.url;
+  });
+
   websocketService.subscribe("exercises",function(event) {
     	$scope.groups = event.groups;
     	$scope.$apply();

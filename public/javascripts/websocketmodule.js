@@ -2,6 +2,8 @@
 angular.module('websocketmodule', [])
 	.factory('websocketService', function() {
   var service = {};
+	
+  service.callback = {};
   
   service.connect = function($url) {
     if(service.ws) { return; }
@@ -30,7 +32,6 @@ angular.module('websocketmodule', [])
   }
  
   service.subscribe = function( topic, callback) {
-  	service.callback = {};
     service.callback[topic] = callback;
   }
 

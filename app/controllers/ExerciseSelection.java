@@ -1,43 +1,46 @@
 package controllers;
 
-import com.google.inject.Inject;
-import com.google.inject.name.Named;
-
-import be.objectify.deadbolt.java.actions.SubjectPresent;
-import play.libs.Akka;
 import play.mvc.Controller;
 import play.mvc.Result;
 import play.mvc.WebSocket;
 import utils.WebSocketUtils;
-import views.html.exerciseselect;
-import actor.ExerciseService;
-import actor.SessionActor;
-import actor.ExerciseSelectionWebsocketHandler.PropCreater;
+import views.html.exerciseSelect;
+import actor.ExerciseSelectionWS.PropCreater;
 import akka.actor.ActorRef;
+import be.objectify.deadbolt.java.actions.SubjectPresent;
+
+import com.google.inject.Inject;
+import com.google.inject.name.Named;
 
 public class ExerciseSelection extends Controller {
 
 	private final ActorRef sessionManager;
+	private final ActorRef exerciseService;
 
 	@Inject
-	public ExerciseSelection(@Named("SessionManager") ActorRef sessionManager) {
+	public ExerciseSelection(
+	  @Named("SessionManager") ActorRef sessionManager,
+	  @Named("ExerciseService") ActorRef exerciseService) {
 		this.sessionManager = sessionManager;
-		// TODO Auto-generated constructor stub
+		this.exerciseService = exerciseService;
 	}
 
 	@SubjectPresent
 	public static Result exerciseSelect() {
-		return ok(exerciseselect.render("Select exercise."));
+		return ok(exerciseSelect.render("Select exercise."));
 	}
 
 	public WebSocket<String> groups() {
+
 		String userName = session("userName");
 		if (userName != null) {
 			play.Logger.info("username " + userName);
-			ActorRef exerciseServices = Akka.system().actorOf(
-					ExerciseService.props(), "EcerciseServices");
-			PropCreater propCreater = new PropCreater(userName, sessionManager,
-					exerciseServices);
+
+			PropCreater propCreater = new PropCreater(
+			  request(),
+			  userName,
+			  sessionManager,
+			  exerciseService);
 			return WebSocket.withActor(propCreater::props);
 		} else {
 			return WebSocketUtils.notAuthorizedWebSocket();

@@ -5,17 +5,15 @@ import static akka.pattern.Patterns.pipe;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import play.Logger;
 import scala.concurrent.ExecutionContextExecutor;
 import scala.concurrent.Future;
 import viewmodels.exerciseselect.ExercisesViewModel;
-import viewmodels.exerciseselect.ExercisesViewModel.Group;
 import viewmodels.exerciseselect.ExercisesViewModel.Exercise;
-import actor.ExerciseSelectionWebsocketHandler.SelectionEvent;
+import viewmodels.exerciseselect.ExercisesViewModel.Group;
+import actor.ExerciseSelectionWS.SelectionEvent;
 import akka.actor.AbstractActor;
 import akka.actor.Props;
 import akka.japi.pf.ReceiveBuilder;

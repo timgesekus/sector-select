@@ -12,66 +12,111 @@ import akka.actor.Props;
 import akka.japi.Creator;
 import akka.japi.pf.ReceiveBuilder;
 
+/**
+ * Manages simulation sessions.
+ */
 public class SessionManager extends AbstractActor {
 	static int nextSessionId = 0;
 	private final Map<Integer, ActorRef> sessions;
 
+	/**
+	 * Create props for {@link SessionManager}
+	 * 
+	 * @return props for creating a {@link SessionManager}
+	 */
 	public static Props props() {
 		return Props.create(new Creator<SessionManager>() {
-
-			/**
-			 *
-			 */
-			private static final long serialVersionUID = -3975356938966488960L;
+			private static final long serialVersionUID = 1L;
 
 			@Override
 			public SessionManager create() throws Exception {
 				return new SessionManager();
 			}
-
 		});
 	}
 
 	public SessionManager() {
 		Logger.info("Starting session Manager");
 		sessions = new HashMap<>();
-		receive(ReceiveBuilder.match(StartExercise.class, this::startExercise)
-				.match(GetSessionActor.class, this::getSessionActor).build());
+		configureMessageHandling();
 	}
 
-	public void startExercise(StartExercise startExercise) {
+	private void configureMessageHandling() {
+		receive(ReceiveBuilder
+		  .match(StartExercise.class, this::startExercise)
+		  .match(GetSessionActor.class, this::getSessionActor)
+		  .build());
+	}
+
+	private void startExercise(StartExercise startExercise) {
 		int newSessionId = getNextSessionId();
-		Props sessionActorProps = SessionActor.props(newSessionId,
-				startExercise.exerciseId, startExercise.ownerName);
-		ActorRef sessionActorRef = getContext().actorOf(sessionActorProps);
-		sessions.put(newSessionId, sessionActorRef);
-		JoinSession joinSession = new JoinSession();
-		joinSession.sessionid = newSessionId;
-		Logger.info("Session started id : {}", newSessionId);
-		sender().tell(joinSession, self());
+		int exerciseId = startExercise.exerciseId;
+		String sessionOwner = startExercise.ownerName;
+		ActorRef sessionActorRef = createNewSessionActor(
+		  newSessionId,
+		  exerciseId,
+		  sessionOwner);
+		registerSessionActor(newSessionId, sessionActorRef);
+		sendJoinSessionToSender(newSessionId);
 	}
 
 	public void getSessionActor(GetSessionActor getSessionActor) {
 		int sessionId = getSessionActor.sessionId;
 		if (sessions.containsKey(sessionId)) {
-			ActorRef sessionActorRef = sessions.get(sessionId);
-			GetSessionActorAnswer getSessionActorAnswer = new GetSessionActorAnswer();
-			getSessionActorAnswer.sessionId = sessionId;
-			getSessionActorAnswer.sessionActor = sessionActorRef;
-			sender().tell(getSessionActorAnswer, self());
+			sendSessionActorToSender(sessionId);
 		} else {
-			NoSessionFound noSessionFound = new NoSessionFound(sessionId);
-			sender().tell(noSessionFound, self());
-
+			sendNoSessionFoundToSender(sessionId);
 		}
+	}
+
+	private void sendJoinSessionToSender(int newSessionId) {
+		JoinSession joinSession = new JoinSession();
+		joinSession.sessionid = newSessionId;
+		Logger.info("JoinSession started id : {}", newSessionId);
+		sender().tell(joinSession, self());
+	}
+
+	private void registerSessionActor(int newSessionId, ActorRef sessionActorRef) {
+		sessions.put(newSessionId, sessionActorRef);
+	}
+
+	private ActorRef createNewSessionActor(
+	  int newSessionId,
+	  int exerciseId,
+	  String sessionOwner) {
+		Props sessionActorProps = SessionActor.props(
+		  newSessionId,
+		  exerciseId,
+		  sessionOwner);
+		ActorRef sessionActorRef = getContext().actorOf(
+		  sessionActorProps,
+		  "sessionActor-" + newSessionId);
+		return sessionActorRef;
+	}
+
+	private void sendNoSessionFoundToSender(int sessionId) {
+		NoSessionFound noSessionFound = new NoSessionFound(sessionId);
+		sender().tell(noSessionFound, self());
+	}
+
+	private void sendSessionActorToSender(int sessionId) {
+		ActorRef sessionActorRef = sessions.get(sessionId);
+		GetSessionActorReply getSessionActorReply = new GetSessionActorReply(
+		  sessionId,
+		  sessionActorRef);
+		sender().tell(getSessionActorReply, self());
 	}
 
 	public int getNextSessionId() {
 		int sessionId = nextSessionId;
-		sessionId++;
+		nextSessionId++;
 		return sessionId;
 	}
 
+	/**
+	 * Send to retrieve the {@link SessionActor} that handles a session identified
+	 * by its id
+	 */
 	public static class GetSessionActor {
 		int sessionId;
 
@@ -80,9 +125,17 @@ public class SessionManager extends AbstractActor {
 		}
 	}
 
-	public static class GetSessionActorAnswer {
+	/**
+	 * Reply to a {@link GetSessionActor}
+	 */
+	public static class GetSessionActorReply {
 		int sessionId;
 		ActorRef sessionActor;
+
+		public GetSessionActorReply(int sessionId, ActorRef sessionActor) {
+			this.sessionId = sessionId;
+			this.sessionActor = sessionActor;
+		}
 	}
 
 	public static class NoSessionFound {

@@ -1,6 +1,5 @@
 package security.model;
 
-import controllers.Application;
 import model.AuthorisedUser;
 import play.libs.F;
 import play.libs.F.Promise;
@@ -9,6 +8,7 @@ import play.mvc.Http.Session;
 import play.mvc.Result;
 import be.objectify.deadbolt.core.models.Subject;
 import be.objectify.deadbolt.java.AbstractDeadboltHandler;
+import controllers.Application;
 
 public class MyDeadBoltHandler extends AbstractDeadboltHandler {
 

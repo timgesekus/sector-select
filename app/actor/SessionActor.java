@@ -1,65 +1,67 @@
 package actor;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import play.Logger;
-import actor.SessionWebsocketHandler.Event;
+import actor.JoinSessionWS.Event;
 import actor.messages.Sector;
 import actor.messages.Sectors;
 import actor.messages.Subscribe;
+import actor.messages.Unsubscribe;
+import akka.actor.AbstractActor;
 import akka.actor.ActorRef;
 import akka.actor.Props;
-import akka.actor.UntypedActor;
 import akka.japi.Creator;
+import akka.japi.pf.ReceiveBuilder;
 
-public class SessionActor extends UntypedActor {
+public class SessionActor extends AbstractActor {
 	private final Map<String, String> sectors = new HashMap<>();
 	private final Map<ActorRef, String> subscribers = new HashMap<>();
 
 	public static Props props(int sessionId, int exerciseId, String ownerName) {
 		return Props.create(new Creator<SessionActor>() {
-			private static final long serialVersionUID = -5374920134795108497L;
+			private static final long serialVersionUID = 1L;
 
 			@Override
 			public SessionActor create() throws Exception {
 				return new SessionActor(sessionId, exerciseId, ownerName);
 			}
-
 		});
 	}
 
 	public SessionActor(int sessionId, int exerciseId, String ownerName) {
+		configureSectors();
+		configureMessageHandling();
+	}
+
+	private void configureSectors() {
 		sectors.put("WUR", "");
 		sectors.put("ERL", "");
 		sectors.put("FRA", "");
 	}
 
-	@Override
-	public void onReceive(Object message) throws Exception {
-		if (message instanceof Subscribe) {
-			Subscribe subscribe = (Subscribe) message;
-			handleSubscription(subscribe);
-		}
-		if (message instanceof Event) {
-			Event event = (Event) message;
-			handleSelectionEvent(event);
-			sendAssignementState();
-		}
+	private void configureMessageHandling() {
+		receive(ReceiveBuilder
+		  .match(Event.class, this::handleSelectionEvent)
+		  .match(Subscribe.class, this::handleSubscription)
+		  .match(Unsubscribe.class, this::handleUnsubscribe)
+		  .build());
 	}
 
 	private void handleSelectionEvent(Event event) {
 		String selectedSector = event.sector;
-		Optional<String> userNameOption = getUserNameOfSender(getSender());
+		Optional<String> userNameOption = getUserNameOfSender(sender());
 		if (userNameOption.isPresent() && sectors.containsKey(selectedSector)) {
-			String userName = userNameOption.get();
-			handleAssignement(selectedSector, userName);
+			handleAssignement(selectedSector, userNameOption.get());
 		}
+		sendAssignementState();
+
 	}
 
 	private void handleAssignement(String selectedSector, String userName) {
@@ -104,9 +106,23 @@ public class SessionActor extends UntypedActor {
 		return getKeyByValue(sectors, userName);
 	}
 
+	private void handleUnsubscribe(Unsubscribe unsubscribe) {
+		Logger.info("Received unsubscribe {}:{}: ", sender());
+		Optional<String> userNameOfSender = getUserNameOfSender(sender());
+		if (userNameOfSender.isPresent()) {
+			List<String> keys = getKeysByValue(sectors, userNameOfSender.get());
+			for (String key : keys) {
+				sectors.put(key, "");
+			}
+			subscribers.remove(sender());
+			sendAssignementState();
+
+		}
+	}
+
 	private void handleSubscription(Subscribe subscribe) {
-		Logger.info("Received subscription: " + subscribe.userName);
-		subscribers.put(getSender(), subscribe.userName);
+		Logger.info("Received subscription {}:{}: ", sender(), subscribe.userName);
+		subscribers.put(sender(), subscribe.userName);
 		sendAssignementState();
 	}
 
@@ -115,7 +131,7 @@ public class SessionActor extends UntypedActor {
 		for (ActorRef subscriber : subscribersList) {
 			String userName = subscribers.get(subscriber);
 			Sectors sectorStates = getSectorStates(userName);
-			subscriber.tell(sectorStates, getSelf());
+			subscriber.tell(sectorStates, self());
 		}
 	}
 
@@ -125,8 +141,7 @@ public class SessionActor extends UntypedActor {
 			String allocatedUser = sectors.get(sectorName);
 			Sector sector = new Sector(sectorName);
 			if (sectors.values().contains(userName)) {
-				if (isAssignedBy(sectorName, userName)
-						|| isUnassigned(sectorName)) {
+				if (isAssignedBy(sectorName, userName) || isUnassigned(sectorName)) {
 					sector.toggable = true;
 				} else {
 					sector.toggable = false;
@@ -142,9 +157,21 @@ public class SessionActor extends UntypedActor {
 	}
 
 	public static <T, E> Optional<T> getKeyByValue(Map<T, E> map, E value) {
-		return map.entrySet().stream()
-				.filter(entry -> entry.getValue().equals(value))
-				.map(entry -> entry.getKey()).findFirst();
+		return map
+		  .entrySet()
+		  .stream()
+		  .filter(entry -> entry.getValue().equals(value))
+		  .map(entry -> entry.getKey())
+		  .findFirst();
+	}
+
+	public static <T, E> List<T> getKeysByValue(Map<T, E> map, E value) {
+		return map
+		  .entrySet()
+		  .stream()
+		  .filter(entry -> entry.getValue().equals(value))
+		  .map(entry -> entry.getKey())
+		  .collect(Collectors.toList());
 	}
 
 }

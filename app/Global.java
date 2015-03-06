@@ -1,10 +1,9 @@
 import modules.ActorModule;
+import play.GlobalSettings;
+import play.Logger;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
-
-import play.GlobalSettings;
-import play.Logger;
 
 public class Global extends GlobalSettings {
 	private static final Injector INJECTOR = createInjector();

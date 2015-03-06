@@ -1,15 +1,14 @@
 package model;
 
-import be.objectify.deadbolt.core.models.Permission;
-import be.objectify.deadbolt.core.models.Role;
-import be.objectify.deadbolt.core.models.Subject;
-import play.db.ebean.Model;
+import java.util.List;
 
-import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 
-import java.util.List;
+import play.db.ebean.Model;
+import be.objectify.deadbolt.core.models.Permission;
+import be.objectify.deadbolt.core.models.Role;
+import be.objectify.deadbolt.core.models.Subject;
 
 public class AuthorisedUser extends Model implements Subject {
 	/**
