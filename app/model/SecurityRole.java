@@ -17,8 +17,7 @@ public class SecurityRole extends Model implements Role {
 	public String name;
 
 	public static final Finder<Long, SecurityRole> find = new Finder<Long, SecurityRole>(
-	  Long.class,
-	  SecurityRole.class);
+			Long.class, SecurityRole.class);
 
 	public String getName() {
 		return name;

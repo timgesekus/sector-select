@@ -29,8 +29,7 @@ public class AuthorisedUser extends Model implements Subject {
 	public List<UserPermission> permissions;
 
 	public static final Finder<Long, AuthorisedUser> find = new Finder<Long, AuthorisedUser>(
-	  Long.class,
-	  AuthorisedUser.class);
+			Long.class, AuthorisedUser.class);
 
 	@Override
 	public List<? extends Role> getRoles() {

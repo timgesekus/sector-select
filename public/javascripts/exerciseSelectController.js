@@ -4,32 +4,19 @@ exerciseSelectApp.controller('exerciseSelectController',['$scope','websocketServ
   $scope.sectors = [
        ];
  
-  websocketService.subscribe("exerciseViewModel",function(event) {
-    	$scope.heading = event.heading;
-    	$scope.breadcrumb = event.breadcrumb;
-    	$scope.selectableItems = event.selectableItems;
-        $scope.$apply();
+  websocketService.subscribe("exercises",function(event) {
+    	$scope.groups = event.groups;
+    	$scope.$apply();
     });
+	
+	$scope.startExercise = function (exerciseId) {
+		console.log("Start exercise:" + exerciseId);
+		var startExercise = {
+				topic : "startExercise",
+				id : 1
+		};
+		websocketService.send(startExercise)
 
-	$scope.select = function(sectorName) {
-		
-		console.log("event:" +  sectorName);
-		var selectEvent = {
-				topic : "select",
-				sector :sectorName
-		};
-		
-		websocketService.send(selectEvent)
 	};
-	
-	$scope.delete = function ( idx ) {
-		var item = $scope.items[idx]
-  	var event = {
-				eventName : "Remove",
-				"item" : item
-		};
-		websocketService.send(event)
-	};
-	
 	websocketService.connect(jsRoutes.controllers.ExerciseSelection.groups().webSocketURL());
 }]);

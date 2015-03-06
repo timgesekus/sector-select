@@ -4,15 +4,16 @@
 <div data-ng-app="exerciseSelectApp">
 
   <div ng-controller="exerciseSelectController">
-    <div id="breadcrumbs">
-    <ol>
-       <li ng-repeat="breadcrumb in breadcrumbs">{{breadcrumb.name}}</li>
-    </ol>
-    </div>
     <div id="selectExercise">
-      <div id="heading">{{heading}}</div>
       <ul>
-        <li ng-repeat="item in selectableItems">{{item.name}}</li>
+        <li ng-repeat="group in groups">
+         {{group.name}}
+        	<ul>
+        		<li ng-repeat="exercise in group.exercises">{{exercise.name}}
+        		<button ng-click="startExercise(exercise.id)">Start</button>
+        		</li>
+        	</ul>
+        </li>
       </ul>
     </div>
   </div>

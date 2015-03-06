@@ -11,7 +11,8 @@ libraryDependencies ++= Seq(
   javaEbean,
   cache,
   javaWs,
-  "be.objectify" %% "deadbolt-java" % "2.3.1"
+  "be.objectify" %% "deadbolt-java" % "2.3.1",
+  "com.google.inject" % "guice" % "3.0"
 )
 
 resolvers += Resolver.url("Objectify Play Repository", url("http://deadbolt.ws/releases/"))(Resolver.ivyStylePatterns)

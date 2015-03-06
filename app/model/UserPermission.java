@@ -16,8 +16,7 @@ public class UserPermission extends Model implements Permission {
 	public String value;
 
 	public static final Model.Finder<Long, UserPermission> find = new Model.Finder<Long, UserPermission>(
-	  Long.class,
-	  UserPermission.class);
+			Long.class, UserPermission.class);
 
 	public String getValue() {
 		return value;

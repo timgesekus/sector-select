@@ -9,7 +9,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import play.Logger;
-import actor.SectorListActor.Event;
+import actor.SessionWebsocketHandler.Event;
 import actor.messages.Sector;
 import actor.messages.Sectors;
 import actor.messages.Subscribe;
@@ -22,19 +22,19 @@ public class SessionActor extends UntypedActor {
 	private final Map<String, String> sectors = new HashMap<>();
 	private final Map<ActorRef, String> subscribers = new HashMap<>();
 
-	public static Props props() {
+	public static Props props(int sessionId, int exerciseId, String ownerName) {
 		return Props.create(new Creator<SessionActor>() {
 			private static final long serialVersionUID = -5374920134795108497L;
 
 			@Override
 			public SessionActor create() throws Exception {
-				return new SessionActor();
+				return new SessionActor(sessionId, exerciseId, ownerName);
 			}
 
 		});
 	}
 
-	public SessionActor() {
+	public SessionActor(int sessionId, int exerciseId, String ownerName) {
 		sectors.put("WUR", "");
 		sectors.put("ERL", "");
 		sectors.put("FRA", "");
@@ -125,7 +125,8 @@ public class SessionActor extends UntypedActor {
 			String allocatedUser = sectors.get(sectorName);
 			Sector sector = new Sector(sectorName);
 			if (sectors.values().contains(userName)) {
-				if (isAssignedBy(sectorName, userName) || isUnassigned(sectorName)) {
+				if (isAssignedBy(sectorName, userName)
+						|| isUnassigned(sectorName)) {
 					sector.toggable = true;
 				} else {
 					sector.toggable = false;
@@ -141,11 +142,9 @@ public class SessionActor extends UntypedActor {
 	}
 
 	public static <T, E> Optional<T> getKeyByValue(Map<T, E> map, E value) {
-		return map
-		  .entrySet()
-		  .stream()
-		  .filter(entry -> entry.getValue().equals(value))
-		  .map(entry -> entry.getKey())
-		  .findFirst();
+		return map.entrySet().stream()
+				.filter(entry -> entry.getValue().equals(value))
+				.map(entry -> entry.getKey()).findFirst();
 	}
+
 }
