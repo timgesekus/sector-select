@@ -23,5 +23,6 @@ exerciseSelectApp.controller('exerciseSelectController',['$scope','websocketServ
 		websocketService.send(startExercise)
 
 	};
-	websocketService.connect(jsRoutes.controllers.ExerciseSelection.groups().webSocketURL());
+	websocketService.connect(jsRoutes.controllers.ExerciseSelection.exerciseSelectionWS().webSocketURL());
 }]);
+

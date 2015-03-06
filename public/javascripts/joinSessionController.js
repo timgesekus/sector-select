@@ -31,3 +31,23 @@ joinSessionApp.controller('JoinSessionController',['$scope','websocketService', 
 	var sessionId = $("#session").data("sessionid");
 	websocketService.connect(jsRoutes.controllers.JoinSession.joinSessionWS(sessionId).webSocketURL());
 }]);
+
+joinSessionApp.controller('chatController',['$scope','websocketService', function($scope, websocketService) {
+	$scope.chat = [];
+	$scope.input = "" ;
+	
+	websocketService.subscribe("chatline",function(event) {
+    $scope.chat.push(event);
+   	$scope.$apply();
+	});
+	
+	$scope.submit = function () {
+		var chatEvent = {
+				topic : "chatMessage",
+				message : $scope.input
+		}
+		websocketService.send(chatEvent)
+		$scope.input = "";
+	}
+}]);
+	

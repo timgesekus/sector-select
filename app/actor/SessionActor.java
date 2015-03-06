@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 
 import play.Logger;
 import actor.JoinSessionWS.Event;
+import actor.SessionChat.ChatMessage;
 import actor.messages.Sector;
 import actor.messages.Sectors;
 import actor.messages.Subscribe;
@@ -23,6 +24,8 @@ import akka.japi.pf.ReceiveBuilder;
 public class SessionActor extends AbstractActor {
 	private final Map<String, String> sectors = new HashMap<>();
 	private final Map<ActorRef, String> subscribers = new HashMap<>();
+	private int sessionId;
+	private ActorRef sessionChaTActorRef;
 
 	public static Props props(int sessionId, int exerciseId, String ownerName) {
 		return Props.create(new Creator<SessionActor>() {
@@ -36,8 +39,10 @@ public class SessionActor extends AbstractActor {
 	}
 
 	public SessionActor(int sessionId, int exerciseId, String ownerName) {
+		this.sessionId = sessionId;
 		configureSectors();
 		configureMessageHandling();
+		createChat();
 	}
 
 	private void configureSectors() {
@@ -51,7 +56,16 @@ public class SessionActor extends AbstractActor {
 		  .match(Event.class, this::handleSelectionEvent)
 		  .match(Subscribe.class, this::handleSubscription)
 		  .match(Unsubscribe.class, this::handleUnsubscribe)
+		  .match(ChatMessage.class, this::forwardToChatActor)
+		  .matchAny(this::unhandled)
 		  .build());
+	}
+
+	private void createChat() {
+		Props props = SessionChat.props();
+		sessionChaTActorRef = getContext().actorOf(
+		  props,
+		  "sessionChatActor-" + sessionId);
 	}
 
 	private void handleSelectionEvent(Event event) {
@@ -115,6 +129,7 @@ public class SessionActor extends AbstractActor {
 				sectors.put(key, "");
 			}
 			subscribers.remove(sender());
+			sessionChaTActorRef.tell(unsubscribe, sender());
 			sendAssignementState();
 
 		}
@@ -123,7 +138,12 @@ public class SessionActor extends AbstractActor {
 	private void handleSubscription(Subscribe subscribe) {
 		Logger.info("Received subscription {}:{}: ", sender(), subscribe.userName);
 		subscribers.put(sender(), subscribe.userName);
+		sessionChaTActorRef.tell(subscribe, sender());
 		sendAssignementState();
+	}
+
+	private void forwardToChatActor(Object message) {
+		sessionChaTActorRef.tell(message, sender());
 	}
 
 	private void sendAssignementState() {

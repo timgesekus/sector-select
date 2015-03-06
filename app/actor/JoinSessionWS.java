@@ -5,6 +5,8 @@ import java.io.IOException;
 import play.Logger;
 import scala.PartialFunction;
 import scala.runtime.BoxedUnit;
+import actor.SessionChat.ChatLine;
+import actor.SessionChat.ChatMessage;
 import actor.SessionManager.GetSessionActor;
 import actor.SessionManager.GetSessionActorReply;
 import actor.messages.Sectors;
@@ -18,6 +20,7 @@ import akka.japi.pf.ReceiveBuilder;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class JoinSessionWS extends AbstractActor {
@@ -48,6 +51,7 @@ public class JoinSessionWS extends AbstractActor {
 		normalState = ReceiveBuilder
 		  .match(String.class, this::receiveJsonFromSocket)
 		  .match(Sectors.class, this::receiveSectors)
+		  .match(ChatLine.class, this::receiveChatLine)
 		  .build();
 
 		this.out = out;
@@ -101,15 +105,31 @@ public class JoinSessionWS extends AbstractActor {
 	  JsonMappingException,
 	  IOException {
 		Logger.info("Received a message:" + json);
-		Event readValue;
-		readValue = objectMapper.readValue(json, Event.class);
-		sessionActor.tell(readValue, self());
+		JsonNode jsonNode = objectMapper.readTree(json);
+		String topic = jsonNode.get("topic").asText();
+		Logger.info("Topic is :" + topic);
+		if (topic.equals("select")) {
+			Event readValue;
+			readValue = objectMapper.readValue(json, Event.class);
+			sessionActor.tell(readValue, self());
+		} else if (topic.equals("chatMessage")) {
+			String message = jsonNode.get("message").asText();
+			ChatMessage chatLine = new ChatMessage(userName, message);
+			sessionActor.tell(chatLine, self());
+		}
+
 	}
 
 	public void receiveSectors(Sectors sectors) throws JsonProcessingException {
 		Logger.info("Received a sectors message " + sectors.sectors.size());
 		String sectorsAsJson = objectMapper.writeValueAsString(sectors);
 		out.tell(sectorsAsJson, self());
+	}
+
+	public void receiveChatLine(ChatLine chatLine) throws JsonProcessingException {
+		Logger.info("Received a chat line " + chatLine.getMessage());
+		String chatLineAsJson = objectMapper.writeValueAsString(chatLine);
+		out.tell(chatLineAsJson, self());
 	}
 
 	public static class PropCreater {

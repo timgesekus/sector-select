@@ -30,7 +30,7 @@ public class ExerciseSelection extends Controller {
 		return ok(exerciseSelect.render("Select exercise."));
 	}
 
-	public WebSocket<String> groups() {
+	public WebSocket<String> exerciseSelectionWS() {
 
 		String userName = session("userName");
 		if (userName != null) {

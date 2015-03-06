@@ -14,6 +14,10 @@ import com.google.inject.name.Named;
 
 import controllers.JoinSession;
 
+/**
+ * Guice doesn't handle java 8 very well. So we need to catch exception by
+ * ourselfs. Can be removed with guice 4.0
+ */
 public class ActorModule extends AbstractModule {
 
 	@Override

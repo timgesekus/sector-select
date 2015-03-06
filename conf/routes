@@ -9,7 +9,7 @@ GET     /joinSessionWS/:sessionId   @controllers.JoinSession.joinSessionWS(sessi
 GET     /login                      controllers.Application.login()
 GET     /logout                     controllers.Application.logout()
 GET     /exerciseSelect             controllers.ExerciseSelection.exerciseSelect()
-GET     /groups                     @controllers.ExerciseSelection.groups()
+GET     /exerciseSelectWS           @controllers.ExerciseSelection.exerciseSelectionWS()
 
 POST    /loginSubmit/               controllers.Application.loginSubmit()
 
