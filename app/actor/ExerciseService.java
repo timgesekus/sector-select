@@ -36,13 +36,14 @@ public class ExerciseService extends AbstractActor {
 	public ExerciseService() {
 		dispatcher = context().system().dispatcher();
 		receive(ReceiveBuilder
-				.match(ExercisesRequest.class, this::receiveRequest)
-				.match(SelectionEvent.class, this::receiveSelect)
-				.matchAny(o -> Logger.info("received unknown message" + o))
-				.build());
+		  .match(ExercisesRequest.class, this::receiveRequest)
+		  .match(SelectionEvent.class, this::receiveSelect)
+		  .matchAny(o -> Logger.info("received unknown message" + o))
+		  .build());
 	}
 
-	// Overengineered for testing and demonstration purposed.
+	// Overengineered for testing and demonstrating how not to block on long
+	// running tasks.
 	public void receiveRequest(ExercisesRequest exercisesRequest) {
 		Logger.info("Receive exercise request");
 		Future<ExercisesViewModel> f = future(() -> {

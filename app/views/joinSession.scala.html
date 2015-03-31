@@ -17,7 +17,7 @@
     <div id="selectExercise">
       <ul>
         <li ng-repeat="line in chat">
-         {{line.userName}}: {{line.message}}
+         {{line}}
         </li>
       </ul>
       <input ng-keyup="($event.which === 13)?submit():0" ng-model="input">

@@ -15,12 +15,13 @@ exerciseSelectApp.controller('exerciseSelectController',['$scope','websocketServ
     });
 	
 	$scope.startExercise = function (exerciseId) {
+		window.location.href=jsRoutes.controllers.JoinSession.createSession(exerciseId).absoluteURL();
 		console.log("Start exercise:" + exerciseId);
-		var startExercise = {
-				topic : "startExercise",
-				id : 1
-		};
-		websocketService.send(startExercise)
+		//var startExercise = {
+		//		topic : "startExercise",
+		//		id : 1
+		//};
+		//websocketService.send(startExercise)
 
 	};
 	websocketService.connect(jsRoutes.controllers.ExerciseSelection.exerciseSelectionWS().webSocketURL());

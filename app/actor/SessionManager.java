@@ -129,8 +129,8 @@ public class SessionManager extends AbstractActor {
 	 * Reply to a {@link GetSessionActor}
 	 */
 	public static class GetSessionActorReply {
-		int sessionId;
-		ActorRef sessionActor;
+		public int sessionId;
+		public ActorRef sessionActor;
 
 		public GetSessionActorReply(int sessionId, ActorRef sessionActor) {
 			this.sessionId = sessionId;

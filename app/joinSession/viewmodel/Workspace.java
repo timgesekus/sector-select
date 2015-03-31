@@ -1,12 +1,12 @@
-package actor.messages;
+package joinSession.viewmodel;
 
-public class Sector {
+public class Workspace {
 	public String name;
 	public String userName;
 	public boolean selected;
 	public boolean toggable;
 
-	public Sector(String aName) {
+	public Workspace(String aName) {
 		name = aName;
 		userName = "";
 		selected = false;

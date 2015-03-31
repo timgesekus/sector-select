@@ -36,8 +36,8 @@ joinSessionApp.controller('chatController',['$scope','websocketService', functio
 	$scope.chat = [];
 	$scope.input = "" ;
 	
-	websocketService.subscribe("chatline",function(event) {
-    $scope.chat.push(event);
+	websocketService.subscribe("ChatViewModel",function(event) {
+    $scope.chat = event.chatLines;
    	$scope.$apply();
 	});
 	

@@ -4,8 +4,7 @@ import play.mvc.Controller;
 import play.mvc.Result;
 import play.mvc.WebSocket;
 import utils.WebSocketUtils;
-import views.html.exerciseSelect;
-import actor.ExerciseSelectionWS.PropCreater;
+import actor.ExerciseSelectionWS;
 import akka.actor.ActorRef;
 import be.objectify.deadbolt.java.actions.SubjectPresent;
 
@@ -27,7 +26,7 @@ public class ExerciseSelection extends Controller {
 
 	@SubjectPresent
 	public static Result exerciseSelect() {
-		return ok(exerciseSelect.render("Select exercise."));
+		return ok(views.html.exerciseSelect.render("Select exercise."));
 	}
 
 	public WebSocket<String> exerciseSelectionWS() {
@@ -35,13 +34,11 @@ public class ExerciseSelection extends Controller {
 		String userName = session("userName");
 		if (userName != null) {
 			play.Logger.info("username " + userName);
-
-			PropCreater propCreater = new PropCreater(
-			  request(),
+			return WebSocket.withActor(out -> ExerciseSelectionWS.props(
+			  out,
 			  userName,
 			  sessionManager,
-			  exerciseService);
-			return WebSocket.withActor(propCreater::props);
+			  exerciseService));
 		} else {
 			return WebSocketUtils.notAuthorizedWebSocket();
 		}

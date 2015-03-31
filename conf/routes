@@ -5,6 +5,7 @@
 # Home page
 GET     /                           controllers.Application.login()
 GET     /joinSession/:sessionId     controllers.JoinSession.joinSession(sessionId: Int)
+GET     /createSession/:exerciseId  @controllers.JoinSession.createSession(exerciseId: Int)
 GET     /joinSessionWS/:sessionId   @controllers.JoinSession.joinSessionWS(sessionId: Int)
 GET     /login                      controllers.Application.login()
 GET     /logout                     controllers.Application.logout()
