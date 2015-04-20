@@ -1,5 +1,6 @@
 package actor.messages;
 
-public class Session {
+public class Session
+{
 
 }

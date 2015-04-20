@@ -1,5 +1,6 @@
 package viewmodels.exerciseselect;
 
-public class JoinSession {
-	public int sessionid;
+public class JoinSession
+{
+  public int sessionid;
 }

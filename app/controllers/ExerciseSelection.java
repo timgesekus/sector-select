@@ -11,36 +11,42 @@ import be.objectify.deadbolt.java.actions.SubjectPresent;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 
-public class ExerciseSelection extends Controller {
+public class ExerciseSelection extends Controller
+{
 
-	private final ActorRef sessionManager;
-	private final ActorRef exerciseService;
+  private final ActorRef sessionManager;
+  private final ActorRef exerciseService;
 
-	@Inject
-	public ExerciseSelection(
-	  @Named("SessionManager") ActorRef sessionManager,
-	  @Named("ExerciseService") ActorRef exerciseService) {
-		this.sessionManager = sessionManager;
-		this.exerciseService = exerciseService;
-	}
+  @Inject
+  public ExerciseSelection(
+    @Named("SessionManager") ActorRef sessionManager,
+    @Named("ExerciseService") ActorRef exerciseService)
+  {
+    this.sessionManager = sessionManager;
+    this.exerciseService = exerciseService;
+  }
 
-	@SubjectPresent
-	public static Result exerciseSelect() {
-		return ok(views.html.exerciseSelect.render("Select exercise."));
-	}
+  @SubjectPresent
+  public static Result exerciseSelect()
+  {
+    return ok(views.html.exerciseSelect.render("Select exercise."));
+  }
 
-	public WebSocket<String> exerciseSelectionWS() {
+  public WebSocket<String> exerciseSelectionWS()
+  {
 
-		String userName = session("userName");
-		if (userName != null) {
-			play.Logger.info("username " + userName);
-			return WebSocket.withActor(out -> ExerciseSelectionWS.props(
-			  out,
-			  userName,
-			  sessionManager,
-			  exerciseService));
-		} else {
-			return WebSocketUtils.notAuthorizedWebSocket();
-		}
-	}
+    String userName = session("userName");
+    if (userName != null)
+    {
+      play.Logger.info("username " + userName);
+      return WebSocket.withActor(out -> ExerciseSelectionWS.props(
+        out,
+        userName,
+        sessionManager,
+        exerciseService));
+    } else
+    {
+      return WebSocketUtils.notAuthorizedWebSocket();
+    }
+  }
 }

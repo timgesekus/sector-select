@@ -18,60 +18,77 @@ import static akka.pattern.Patterns.ask;
 
 import com.google.inject.name.Named;
 
-public class JoinSession extends Controller {
+import eventBus.EventBus;
 
-	private final ActorRef sessionManager;
+public class JoinSession extends Controller
+{
 
-	public JoinSession(@Named("SessionManager") ActorRef sessionManager) {
-		this.sessionManager = sessionManager;
-	}
+  private final ActorRef sessionManager;
+  private EventBus eventBus;
 
-	@SubjectPresent
-	public Promise<Result> createSession(int exerciseId) {
+  public JoinSession(
+    @Named("SessionManager") ActorRef sessionManager,
+    EventBus eventBus)
+  {
+    this.sessionManager = sessionManager;
+    this.eventBus = eventBus;
+  }
 
-		String userName = session("userName");
-		StartExercise startExercise = new StartExercise(userName, exerciseId);
+  @SubjectPresent
+  public Promise<Result> createSession(int exerciseId)
+  {
 
-		// return ok(views.html.joinSession.render(sessionId));
-		Future<Object> startExerciseAnswer = ask(
-		  sessionManager,
-		  startExercise,
-		  1000);
-		return Promise.wrap(startExerciseAnswer).map(
-		  this::handleStartExerciseAnswer);
-	}
+    String userName = session("userName");
+    StartExercise startExercise = new StartExercise(userName, exerciseId);
 
-	@SubjectPresent
-	public static Result joinSession(int sessionId) {
-		return ok(views.html.joinSession.render(sessionId));
-	}
+    // return ok(views.html.joinSession.render(sessionId));
+    Future<Object> startExerciseAnswer = ask(
+      sessionManager,
+      startExercise,
+      1000);
+    return Promise.wrap(startExerciseAnswer).map(
+      this::handleStartExerciseAnswer);
+  }
 
-	public WebSocket<String> joinSessionWS(int sessionId) {
-		Logger.info("sectors with sessionId " + sessionId);
-		String userName = session("userName");
-		if (userName != null) {
-			play.Logger.info("username " + userName);
-			Props joinSessionPresenterProps = JoinSessionPresenter.props(
-			  userName,
-			  sessionId,
-			  sessionManager);
-			ActorRef joinSessionPreseneter = Akka.system().actorOf(
-			  joinSessionPresenterProps);
-			return WebSocket.withActor(out -> JoinSessionWS.props(
-			  out,
-			  userName,
-			  joinSessionPreseneter));
-		} else {
-			return WebSocketUtils.notAuthorizedWebSocket();
-		}
-	}
+  @SubjectPresent
+  public static Result joinSession(int sessionId)
+  {
+    return ok(views.html.joinSession.render(sessionId));
+  }
 
-	private Result handleStartExerciseAnswer(Object startExerciseAnswer) {
-		if (startExerciseAnswer instanceof viewmodels.exerciseselect.JoinSession) {
-			viewmodels.exerciseselect.JoinSession joinSession = (viewmodels.exerciseselect.JoinSession) startExerciseAnswer;
-			return joinSession(joinSession.sessionid);
-		}
-		return internalServerError("Failed to create session: "
-		    + startExerciseAnswer.toString());
-	}
+  public WebSocket<String> joinSessionWS(int sessionId)
+  {
+    Logger.info("sectors with sessionId " + sessionId);
+    String userName = session("userName");
+    if (userName != null)
+    {
+      play.Logger.info("username " + userName);
+      Props joinSessionPresenterProps = JoinSessionPresenter.props(
+        userName,
+        sessionId,
+        sessionManager);
+      ActorRef joinSessionPresenter = Akka.system().actorOf(
+        joinSessionPresenterProps);
+      return WebSocket.withActor(out -> JoinSessionWS.props(
+        out,
+        userName,
+        joinSessionPresenter,
+        eventBus,
+        sessionId));
+    } else
+    {
+      return WebSocketUtils.notAuthorizedWebSocket();
+    }
+  }
+
+  private Result handleStartExerciseAnswer(Object startExerciseAnswer)
+  {
+    if (startExerciseAnswer instanceof viewmodels.exerciseselect.JoinSession)
+    {
+      viewmodels.exerciseselect.JoinSession joinSession = (viewmodels.exerciseselect.JoinSession) startExerciseAnswer;
+      return joinSession(joinSession.sessionid);
+    }
+    return internalServerError("Failed to create session: "
+        + startExerciseAnswer.toString());
+  }
 }

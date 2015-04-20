@@ -1,4 +1,5 @@
 package actor.messages;
 
-public class Unsubscribe {
+public class Unsubscribe
+{
 }

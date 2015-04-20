@@ -10,20 +10,24 @@ import be.objectify.deadbolt.core.models.Role;
  * @author Steve Chaloner (steve@objectify.be)
  */
 @Entity
-public class SecurityRole extends Model implements Role {
-	@Id
-	public Long id;
+public class SecurityRole extends Model implements Role
+{
+  @Id
+  public Long id;
 
-	public String name;
+  public String name;
 
-	public static final Finder<Long, SecurityRole> find = new Finder<Long, SecurityRole>(
-			Long.class, SecurityRole.class);
+  public static final Finder<Long, SecurityRole> find = new Finder<Long, SecurityRole>(
+    Long.class,
+    SecurityRole.class);
 
-	public String getName() {
-		return name;
-	}
+  public String getName()
+  {
+    return name;
+  }
 
-	public static SecurityRole findByName(String name) {
-		return find.where().eq("name", name).findUnique();
-	}
+  public static SecurityRole findByName(String name)
+  {
+    return find.where().eq("name", name).findUnique();
+  }
 }

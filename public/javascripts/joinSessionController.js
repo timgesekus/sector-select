@@ -4,8 +4,8 @@ joinSessionApp.controller('JoinSessionController',['$scope','websocketService', 
   $scope.sectors = [
        ];
  
-  websocketService.subscribe("sectors",function(event) {
-    	$scope.sectors = event.sectors;
+  websocketService.subscribe("workspaceAssignement",function(event) {
+    	$scope.sectors = event.workspaceAssignements;
       $scope.$apply();  	
  });
 

@@ -25,69 +25,78 @@ import akka.japi.pf.ReceiveBuilder;
  * exercises belonging to the user.
  *
  */
-public class ExerciseService extends AbstractActor {
+public class ExerciseService extends AbstractActor
+{
 
-	private final ExecutionContextExecutor dispatcher;
+  private final ExecutionContextExecutor dispatcher;
 
-	public static Props props() {
-		return Props.create(ExerciseService.class);
-	}
+  public static Props props()
+  {
+    return Props.create(ExerciseService.class);
+  }
 
-	public ExerciseService() {
-		dispatcher = context().system().dispatcher();
-		receive(ReceiveBuilder
-		  .match(ExercisesRequest.class, this::receiveRequest)
-		  .match(SelectionEvent.class, this::receiveSelect)
-		  .matchAny(o -> Logger.info("received unknown message" + o))
-		  .build());
-	}
+  public ExerciseService()
+  {
+    dispatcher = context().system().dispatcher();
+    receive(ReceiveBuilder
+      .match(ExercisesRequest.class, this::receiveRequest)
+      .match(SelectionEvent.class, this::receiveSelect)
+      .matchAny(o -> Logger.info("received unknown message" + o))
+      .build());
+  }
 
-	// Overengineered for testing and demonstrating how not to block on long
-	// running tasks.
-	public void receiveRequest(ExercisesRequest exercisesRequest) {
-		Logger.info("Receive exercise request");
-		Future<ExercisesViewModel> f = future(() -> {
-			return presentExercises(exercisesRequest.userName);
-		}, dispatcher);
-		pipe(f, dispatcher).to(sender());
-	}
+  // Overengineered for testing and demonstrating how not to block on long
+  // running tasks.
+  public void receiveRequest(ExercisesRequest exercisesRequest)
+  {
+    Logger.info("Receive exercise request");
+    Future<ExercisesViewModel> f = future(() -> {
+      return presentExercises(exercisesRequest.userName);
+    }, dispatcher);
+    pipe(f, dispatcher).to(sender());
+  }
 
-	public void receiveSelect(SelectionEvent selectionEvent) {
-		if (selectionEvent.type.equals("group")) {
+  public void receiveSelect(SelectionEvent selectionEvent)
+  {
+    if (selectionEvent.type.equals("group"))
+    {
 
-		}
-	}
+    }
+  }
 
-	public static ExercisesRequest createRequest(String userName) {
-		ExercisesRequest request = new ExercisesRequest();
-		request.userName = userName;
-		return request;
-	}
+  public static ExercisesRequest createRequest(String userName)
+  {
+    ExercisesRequest request = new ExercisesRequest();
+    request.userName = userName;
+    return request;
+  }
 
-	/**
-	 * Lets assume this takes a long time, aka getting it from atportal.
-	 *
-	 * @param userName
-	 * @return
-	 */
-	private ExercisesViewModel presentExercises(String userName) {
-		List<Group> groups = new ArrayList<>();
+  /**
+   * Lets assume this takes a long time, aka getting it from atportal.
+   *
+   * @param userName
+   * @return
+   */
+  private ExercisesViewModel presentExercises(String userName)
+  {
+    List<Group> groups = new ArrayList<>();
 
-		Group group = new Group();
-		group.name = "Week 1";
-		group.id = 1;
-		Exercise exercise = new Exercise();
-		exercise.name = "VT2002";
-		exercise.id = 1;
-		group.exercises = Arrays.asList(exercise);
+    Group group = new Group();
+    group.name = "Week 1";
+    group.id = 1;
+    Exercise exercise = new Exercise();
+    exercise.name = "VT2002";
+    exercise.id = 1;
+    group.exercises = Arrays.asList(exercise);
 
-		groups.add(group);
-		ExercisesViewModel exercises = new ExercisesViewModel(groups);
-		return exercises;
-	}
+    groups.add(group);
+    ExercisesViewModel exercises = new ExercisesViewModel(groups);
+    return exercises;
+  }
 
-	public static class ExercisesRequest {
-		String userName;
-	}
+  public static class ExercisesRequest
+  {
+    String userName;
+  }
 
 }

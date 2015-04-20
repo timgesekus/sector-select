@@ -2,17 +2,20 @@ package joinSession.viewmodel;
 
 import java.util.List;
 
-public class ChatViewModel {
-	public List<String> chatLines;
-	public String topic;
+public class ChatViewModel
+{
+  public List<String> chatLines;
+  public String topic;
 
-	private ChatViewModel() {
-	}
+  private ChatViewModel()
+  {
+  }
 
-	public ChatViewModel(List<String> chatLines) {
-		this.topic = "ChatViewModel";
-		this.chatLines = chatLines;
+  public ChatViewModel(List<String> chatLines)
+  {
+    this.topic = "ChatViewModel";
+    this.chatLines = chatLines;
 
-	}
+  }
 
 }
