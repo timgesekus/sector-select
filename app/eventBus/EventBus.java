@@ -23,6 +23,12 @@ public class EventBus extends LookupEventBus<Event, ActorRef, String>
     subscriber.tell(event, null);
   }
 
+  public void publish(String topic, Object message)
+  {
+    Event event = new Event(topic, message);
+    publish(event);
+  }
+
   public String classify(Event event)
   {
     return event.topic;

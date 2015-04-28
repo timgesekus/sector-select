@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import eventBus.EventBus;
 import joinSession.viewmodel.ChatViewModel;
 import joinSession.viewmodel.Workspace;
 import joinSession.viewmodel.WorkspaceAssignementViewModel;
@@ -42,6 +43,7 @@ public class JoinSessionPresenter extends AbstractActorWithStash
 
   public static Props props(
     String userName,
+    EventBus eventBus,
     int sessionId,
     ActorRef sessionManager)
   {
@@ -56,7 +58,11 @@ public class JoinSessionPresenter extends AbstractActorWithStash
       @Override
       public JoinSessionPresenter create() throws Exception
       {
-        return new JoinSessionPresenter(userName, sessionId, sessionManager);
+        return new JoinSessionPresenter(
+          userName,
+          sessionId,
+          eventBus,
+          sessionManager);
       }
     });
   }
@@ -64,6 +70,7 @@ public class JoinSessionPresenter extends AbstractActorWithStash
   public JoinSessionPresenter(
     String userName,
     int sessionId,
+    EventBus eventBus,
     ActorRef sessionManager)
   {
 

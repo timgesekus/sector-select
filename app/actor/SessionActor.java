@@ -3,7 +3,9 @@ package actor;
 import java.util.HashMap;
 import java.util.Map;
 
+import chat.command.ChatCommand.CreateChat;
 import eventBus.EventBus;
+import eventBus.Topics;
 import joinSessionView.JoinSessionWS.WorkspaceSelection;
 import play.Logger;
 import actor.messages.Subscribe;
@@ -18,7 +20,6 @@ public class SessionActor extends AbstractActor
 {
   private final Map<ActorRef, String> subscribers = new HashMap<>();
   private int sessionId;
-  private ActorRef sessionChatActorRef;
   private ActorRef sessionWorkspaceAssignement;
   private EventBus eventBus;
 
@@ -65,10 +66,11 @@ public class SessionActor extends AbstractActor
 
   private void createChat()
   {
-    Props props = SessionChat.props(eventBus);
-    sessionChatActorRef = getContext().actorOf(
-      props,
-      "sessionChatActor-" + sessionId);
+    CreateChat createChat = CreateChat
+      .newBuilder()
+      .setChatId("chat-" + sessionId)
+      .build();
+    eventBus.publish(Topics.CHAT_COMMAND.toString(), createChat);
   }
 
   private void createWorkspaceAssignements()
@@ -100,7 +102,6 @@ public class SessionActor extends AbstractActor
 
   private void sendToChildren(Object message)
   {
-    sessionChatActorRef.forward(message, getContext());
     sessionWorkspaceAssignement.forward(message, getContext());
   }
 }

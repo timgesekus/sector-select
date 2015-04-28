@@ -1,0 +1,6 @@
+package chat.error;
+
+message CreateChatFailed {
+  required string chatId = 1;
+  required string cause = 2;
+}

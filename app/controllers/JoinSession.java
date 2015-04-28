@@ -65,6 +65,7 @@ public class JoinSession extends Controller
       play.Logger.info("username " + userName);
       Props joinSessionPresenterProps = JoinSessionPresenter.props(
         userName,
+        eventBus,
         sessionId,
         sessionManager);
       ActorRef joinSessionPresenter = Akka.system().actorOf(

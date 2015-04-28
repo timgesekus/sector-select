@@ -1,4 +1,5 @@
 import com.typesafe.sbteclipse.core.EclipsePlugin.EclipseKeys
+
 import sbtprotobuf.{ProtobufPlugin=>PB}
 
 name := """sector-select"""
@@ -9,10 +10,11 @@ lazy val root = (project in file(".")).enablePlugins(PlayJava)
 
 scalaVersion := "2.11.6"
 
-
-
 Seq(PB.protobufSettings: _*)
 
+protoc in PB.protobufConfig := "D:/Users/tim/Software/protoc/protoc"
+
+version in PB.protobufConfig := "2.6.1"
 
 libraryDependencies ++= Seq(
   javaJdbc,
@@ -20,7 +22,8 @@ libraryDependencies ++= Seq(
   cache,
   javaWs,
   "be.objectify" %% "deadbolt-java" % "2.3.1",
-  "com.google.inject" % "guice" % "3.0"
+  "com.google.inject" % "guice" % "3.0",
+  "com.google.protobuf" % "protobuf-java" % "2.6.1"
 )
 
 EclipseKeys.withSource := true

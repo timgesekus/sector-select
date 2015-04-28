@@ -1,0 +1,29 @@
+package chat.event;
+
+message ChatCreated {
+  required string chatId = 1;
+}
+
+message ChatClosed {
+  required string chatId = 1;
+}
+message UserJoinedChat {
+  required string userId = 1;
+  required string chatId = 2;
+}
+
+message UserLeftChat {
+  required string userId = 1;
+  required string chatId = 2;
+}
+
+message MessageChated {
+  required string userId = 1;
+  required string chatId = 2;
+  required string message = 3;
+}
+
+message RestoreChatComplete {
+  required string chatId = 1;
+}
+
