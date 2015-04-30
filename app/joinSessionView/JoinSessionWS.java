@@ -25,13 +25,7 @@ import eventBus.Topics;
 public class JoinSessionWS extends AbstractActor
 {
 
-  private final ObjectMapper objectMapper;
-  final Logger.ALogger logger = Logger.of(this.getClass());
-  private final ActorRef out;
-  private String userName;
-  private EventBus eventBus;
-  private int sessionId;
-
+ 
   public static Props props(
     ActorRef out,
     String userName,
@@ -51,6 +45,14 @@ public class JoinSessionWS extends AbstractActor
 
   }
 
+  private final ObjectMapper objectMapper;
+  final Logger.ALogger logger = Logger.of(this.getClass());
+  private final ActorRef out;
+  private String userName;
+  private EventBus eventBus;
+  private int sessionId;
+  private String chatId;
+  
   public JoinSessionWS(
     ActorRef out,
     String userName,
@@ -70,10 +72,13 @@ public class JoinSessionWS extends AbstractActor
 
     this.out = out;
     this.userName = userName;
+    this.chatId = "chat-" + sessionId;
+    
     objectMapper = new ObjectMapper();
     Props chatPresenterProps = ChatPresenter.props(
       userName,
       sessionId,
+      chatId,
       eventBus,
       out);
     getContext().actorOf(chatPresenterProps);
@@ -93,19 +98,17 @@ public class JoinSessionWS extends AbstractActor
       Logger.info("Select event: ");
       String workspace = jsonNode.get("sector").asText();
       WorkspaceSelection event = new WorkspaceSelection(workspace, userName);
-      eventBus.publish(new eventBus.Event("workspaceSelectionEvent", event));
+      eventBus.publish("workspaceSelectionEvent", event);
     } else if (topic.equals("chatMessage"))
     {
       String message = jsonNode.get("message").asText();
       ChatMessage chatLine = ChatMessage
         .newBuilder()
         .setUserId(userName)
-        .setChatId("chat-" + sessionId)
+        .setChatId(chatId)
         .setMessage(message)
         .build();
-      eventBus.publish(new eventBus.Event(
-        Topics.CHAT_COMMAND.toString(),
-        chatLine));
+      eventBus.publish(Topics.CHAT_COMMAND.toString(), chatLine);
     }
 
   }

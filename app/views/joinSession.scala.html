@@ -16,7 +16,7 @@
  <div ng-controller="chatController">
     <div id="selectExercise">
       <ul>
-        <li ng-repeat="line in chat">
+        <li ng-repeat="line in chat  track by $index">
          {{line}}
         </li>
       </ul>

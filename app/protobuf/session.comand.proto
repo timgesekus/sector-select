@@ -1,0 +1,27 @@
+package session.command;
+
+message start_session {
+  required string session_id = 1;
+  repeated string workspace_names = 2;
+  required string exercise_id = 3;
+  requires string ownering_user_id = 4;
+}
+
+message stop_session {
+  required string session_id = 1;
+}
+
+
+message user_join_session {
+  required string session_id = 1;
+  required string user_name = 2;
+}
+
+message user_select_workspace {
+  required string session_id = 1;
+  required string user_name = 2;
+  required string workspace_name =3;
+}
+
+
+

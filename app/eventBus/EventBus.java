@@ -20,12 +20,19 @@ public class EventBus extends LookupEventBus<Event, ActorRef, String>
   @Override
   public void publish(Event event, ActorRef subscriber)
   {
-    subscriber.tell(event.payload, null);
+    subscriber.tell(event.payload, event.sender);
   }
 
   public void publish(String topic, Object message)
   {
-    Event event = new Event(topic, message);
+    Event event = new Event(topic, message, ActorRef.noSender());
+    publish(event);
+  }
+
+  
+  public void publish(String topic,Object message, ActorRef sender)
+  {
+    Event event = new Event(topic, message, sender);
     publish(event);
   }
 

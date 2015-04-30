@@ -10,6 +10,7 @@ import view.chat.ChatView.Chat;
 import com.googlecode.protobuf.format.JsonFormat;
 
 import chat.command.ChatCommand;
+import chat.command.ChatCommand.RestoreChat;
 import chat.command.ChatCommand.RestoreChat.Builder;
 import chat.event.ChatEvent;
 import chat.event.ChatEvent.MessageChated;
@@ -28,62 +29,59 @@ import akka.japi.pf.ReceiveBuilder;
 
 public class ChatPresenter extends AbstractActor
 {
-  public static Props props(
-    final String userName,
-    final int sessionId,
-    final EventBus eventBus,
-    final ActorRef out)
+  public static Props props(final String userName, final int sessionId, final String chatId,
+      final EventBus eventBus, final ActorRef out)
   {
-    return Props.create(new Creator<ChatPresenter>()
+    return Props.create(new Creator< ChatPresenter >()
     {
       private static final long serialVersionUID = 1398731621836926808L;
+
 
       @Override
       public ChatPresenter create() throws Exception
       {
-        return new ChatPresenter(userName, sessionId, eventBus, out);
+        return new ChatPresenter(userName, sessionId, chatId, eventBus, out);
       }
 
     });
 
   }
 
-  private List<String> chat = new ArrayList<>();
+
+  private List< String > chat = new ArrayList<>();
   private boolean restored;
   private ActorRef out;
   final Logger.ALogger logger = Logger.of(this.getClass());
 
-  public ChatPresenter(
-    String userName,
-    int sessionId,
-    EventBus eventBus,
-    ActorRef out)
+
+  public ChatPresenter(String userName, int sessionId, final String chatId, EventBus eventBus, ActorRef out)
   {
     this.out = out;
     restored = false;
-    receive(ReceiveBuilder
-      .match(ChatEvent.MessageChated.class, this::messageChated)
-      .match(RestoreChatComplete.class, this::restoreChatCompelte)
-      .matchAny(this::unhandled)
-      .build());
+    receive(ReceiveBuilder.match(ChatEvent.MessageChated.class, this::messageChated)
+        .match(RestoreChatComplete.class, this::restoreChatCompelte)
+        .matchAny(this::unhandled)
+        .build());
     eventBus.subscribe(self(), Topics.CHAT_EVENT.toString());
-    Builder restoreChat = ChatCommand.RestoreChat.newBuilder().setChatId(
-      sessionId + "-chat");
-    eventBus.publish(Topics.CHAT_COMMAND.toString(), restoreChat);
+    RestoreChat restoreChat = ChatCommand.RestoreChat.newBuilder()
+        .setChatId(chatId)
+        .build();
+    eventBus.publish(Topics.CHAT_COMMAND.toString(), restoreChat, self());
   }
+
 
   public void unhandled(Object message)
   {
-    logger.info(
-      "Received unknown message {} {}",
-      message.getClass().toString(),
-      message);
+    logger.info("Received unknown message {} {}", message.getClass()
+        .toString(), message);
   }
+
 
   public void restoreChatCompelte(RestoreChatComplete restoreChatComplete)
   {
     restored = true;
   }
+
 
   public void messageChated(MessageChated messageChated)
   {
@@ -93,9 +91,11 @@ public class ChatPresenter extends AbstractActor
     {
       Chat.Builder chatBuilder = Chat.newBuilder();
       chatBuilder.setTopic("ChatViewModel");
-      chat.stream().forEach(message -> chatBuilder.addMessages(message));
+      chat.stream()
+          .forEach(message -> chatBuilder.addMessages(message));
       Chat chatMessage = chatBuilder.build();
       String jsonMessage = JsonFormat.printToString(chatMessage);
+      logger.info("Sending message {}", jsonMessage);
       out.tell(jsonMessage, self());
     }
   }

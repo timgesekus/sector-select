@@ -88,7 +88,7 @@ public class ChatService extends AbstractActor
         .newBuilder()
         .setChatId(chatId)
         .build();
-      eventBus.publish(new Event(Topics.CHAT_EVENT.toString(), chatCreated));
+      eventBus.publish(Topics.CHAT_EVENT.toString(), chatCreated);
 
     }
   }
@@ -97,6 +97,6 @@ public class ChatService extends AbstractActor
   {
     String chatId = closeChat.getChatId();
     ChatClosed chatCreated = ChatClosed.newBuilder().setChatId(chatId).build();
-    eventBus.publish(new Event(Topics.CHAT_EVENT.toString(), chatCreated));
+    eventBus.publish(Topics.CHAT_EVENT.toString(), chatCreated);
   }
 }

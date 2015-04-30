@@ -21,6 +21,7 @@ angular.module('websocketmodule', [])
     ws.onmessage = function(message) {
     	console.log("Got message:" + message.data);
     	var data = JSON.parse(message.data);
+    	console.log("Topic is: " + data.topic);
     	service.callback[data.topic](data);
     };
  

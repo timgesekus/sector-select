@@ -71,7 +71,7 @@ public class Chat extends AbstractActor
 
   public void unhandled(Object message)
   {
-    logger.info("Received unknown message {}", message);
+    logger.info("Received unknown message {} {}", message.getClass(), message);
   }
 
   private void userJoinChat(UserJoinChat userJoinChat)
@@ -136,10 +136,9 @@ public class Chat extends AbstractActor
 
   private void restoreChat(RestoreChat requestChat)
   {
-    events.stream().forEach(event -> sendEventToSender(event));
-    sendEventToSender(new Event(
-      Topics.CHAT_EVENT.toString(),
-      RestoreChatComplete.newBuilder().build()));
+    logger.info("Restoration requst {} sender:{} ", requestChat.getChatId(), sender());
+    events.stream().forEach(event -> sendMessageToSender(event));
+    sendMessageToSender(RestoreChatComplete.newBuilder().setChatId(chatId).build());
   }
 
   private void publishAndStore(Object message)
@@ -148,8 +147,8 @@ public class Chat extends AbstractActor
     eventBus.publish(Topics.CHAT_EVENT.toString(), message);
   }
 
-  private void sendEventToSender(Object event)
+  private void sendMessageToSender(Object event)
   {
-    sender().tell(new Event(Topics.CHAT_EVENT.toString(), event), self());
+    sender().tell(event, self());
   }
 }

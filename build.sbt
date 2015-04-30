@@ -12,7 +12,7 @@ scalaVersion := "2.11.6"
 
 Seq(PB.protobufSettings: _*)
 
-protoc in PB.protobufConfig := "D:/Users/tim/Software/protoc/protoc"
+//protoc in PB.protobufConfig := "D:/Users/tim/Software/protoc/protoc"
 
 version in PB.protobufConfig := "2.6.1"
 
