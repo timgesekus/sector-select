@@ -1,9 +1,18 @@
 import modules.ActorModule;
+import play.Application;
 import play.GlobalSettings;
 import play.Logger;
+import play.libs.Akka;
+import services.ChatService;
+import akka.actor.ActorRef;
+import akka.actor.Props;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
+import com.google.inject.Key;
+import com.google.inject.name.Names;
+
+import eventBus.EventBus;
 
 public class Global extends GlobalSettings
 {
@@ -13,7 +22,6 @@ public class Global extends GlobalSettings
   public <A> A getControllerInstance(Class<A> controllerClass) throws Exception
   {
     Logger.info("Get instance called" + controllerClass.toString());
-
     return INJECTOR.getInstance(controllerClass);
   }
 
@@ -21,6 +29,17 @@ public class Global extends GlobalSettings
   {
     Logger.info("Creating injector");
     return Guice.createInjector(new ActorModule());
+  }
+
+  @Override
+  public void onStart(Application app)
+  {
+    super.beforeStart(app);
+    // Side effect needed don´t delte
+    ActorRef chatService = INJECTOR.getInstance(Key.get(
+      ActorRef.class,
+      Names.named("ChatService")));
+
   }
 
 }

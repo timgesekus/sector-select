@@ -14,13 +14,13 @@ public class EventBus extends LookupEventBus<Event, ActorRef, String>
   @Override
   public int compareSubscribers(ActorRef subscriberA, ActorRef subscriberB)
   {
-    return (subscriberA.compareTo(subscriberA));
+    return (subscriberA.compareTo(subscriberB));
   }
 
   @Override
   public void publish(Event event, ActorRef subscriber)
   {
-    subscriber.tell(event, null);
+    subscriber.tell(event.payload, null);
   }
 
   public void publish(String topic, Object message)

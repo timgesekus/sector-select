@@ -21,6 +21,7 @@ public class SessionManager extends AbstractActor
   static int nextSessionId = 0;
   private final Map<Integer, ActorRef> sessions;
   private EventBus eventBus;
+  final private Logger.ALogger logger = Logger.of(this.getClass());
 
   /**
    * Create props for {@link SessionManager}
@@ -44,6 +45,7 @@ public class SessionManager extends AbstractActor
   public SessionManager(EventBus eventBus)
   {
     this.eventBus = eventBus;
+    logger.info("Starting session Manager");
     Logger.info("Starting session Manager");
     sessions = new HashMap<>();
     configureMessageHandling();
@@ -59,6 +61,7 @@ public class SessionManager extends AbstractActor
 
   private void startExercise(StartExercise startExercise)
   {
+    logger.info("Start exercise");
     int newSessionId = getNextSessionId();
     int exerciseId = startExercise.exerciseId;
     String sessionOwner = startExercise.ownerName;

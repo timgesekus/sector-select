@@ -2,6 +2,7 @@ package modules;
 
 import play.Logger;
 import play.libs.Akka;
+import services.ChatService;
 import actor.ExerciseService;
 import actor.SessionManager;
 import akka.actor.ActorRef;
@@ -26,6 +27,7 @@ public class ActorModule extends AbstractModule
   protected void configure()
   {
     bind(EventBus.class).toInstance(new eventBus.EventBus());
+
   }
 
   @Provides
@@ -61,6 +63,23 @@ public class ActorModule extends AbstractModule
       Logger.error("Failed in provide exercise service", e);
     }
     Logger.info("All is well");
+    return null;
+  }
+
+  @Provides
+  @Singleton
+  @Named("ChatService")
+  ActorRef provideChatService(EventBus eventBus)
+  {
+    try
+    {
+      Logger.info("Creating chat service");
+      Props props = ChatService.props(eventBus);
+      return Akka.system().actorOf(props, "ChatService");
+    } catch (Exception e)
+    {
+      Logger.error("Failed in provide chat service", e);
+    }
     return null;
   }
 

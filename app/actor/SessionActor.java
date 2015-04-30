@@ -22,6 +22,7 @@ public class SessionActor extends AbstractActor
   private int sessionId;
   private ActorRef sessionWorkspaceAssignement;
   private EventBus eventBus;
+  final private Logger.ALogger logger = Logger.of(this.getClass());
 
   public static Props props(
     int sessionId,
@@ -47,6 +48,7 @@ public class SessionActor extends AbstractActor
     String ownerName,
     EventBus eventBus)
   {
+    logger.info("Create Session with id {}", sessionId);
     this.sessionId = sessionId;
     this.eventBus = eventBus;
     configureMessageHandling();
@@ -66,10 +68,9 @@ public class SessionActor extends AbstractActor
 
   private void createChat()
   {
-    CreateChat createChat = CreateChat
-      .newBuilder()
-      .setChatId("chat-" + sessionId)
-      .build();
+    String chatId = "chat-" + sessionId;
+    logger.info("Create Chat with id {}", chatId);
+    CreateChat createChat = CreateChat.newBuilder().setChatId(chatId).build();
     eventBus.publish(Topics.CHAT_COMMAND.toString(), createChat);
   }
 

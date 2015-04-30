@@ -3,6 +3,7 @@ package services;
 import java.util.ArrayList;
 import java.util.List;
 
+import play.Logger;
 import chat.command.ChatCommand.ChatMessage;
 import akka.actor.AbstractActor;
 import akka.actor.ActorRef;
@@ -22,6 +23,8 @@ import eventBus.Topics;
 
 public class Chat extends AbstractActor
 {
+
+  final Logger.ALogger logger = Logger.of(this.getClass());
 
   public static Props props(String chatId, EventBus eventBus)
   {
@@ -43,10 +46,11 @@ public class Chat extends AbstractActor
 
   public Chat(String chatId, EventBus eventBus)
   {
+    logger.info("Chat with id {} created", chatId);
     this.chatId = chatId;
     this.eventBus = eventBus;
-    subscribteToChatCommands();
     configureMessageHandling();
+    subscribteToChatCommands();
   }
 
   private void subscribteToChatCommands()
@@ -61,7 +65,13 @@ public class Chat extends AbstractActor
       .match(UserLeaveChat.class, this::userLeaveChat)
       .match(ChatMessage.class, this::chatMessage)
       .match(RestoreChat.class, this::restoreChat)
+      .matchAny(this::unhandled)
       .build());
+  }
+
+  public void unhandled(Object message)
+  {
+    logger.info("Received unknown message {}", message);
   }
 
   private void userJoinChat(UserJoinChat userJoinChat)
@@ -108,6 +118,8 @@ public class Chat extends AbstractActor
 
   private void chatMessage(ChatMessage chatMessage)
   {
+    logger.info("Chat message: {}", chatMessage);
+
     if (chatMessage.getChatId().equals(chatId))
     {
       String userId = chatMessage.getUserId();

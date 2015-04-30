@@ -1,0 +1,6 @@
+package view.chat;
+
+message Chat {
+  required string topic  = 1;
+  repeated string messages = 2;
+}

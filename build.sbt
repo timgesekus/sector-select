@@ -23,7 +23,8 @@ libraryDependencies ++= Seq(
   javaWs,
   "be.objectify" %% "deadbolt-java" % "2.3.1",
   "com.google.inject" % "guice" % "3.0",
-  "com.google.protobuf" % "protobuf-java" % "2.6.1"
+  "com.google.protobuf" % "protobuf-java" % "2.6.1",
+  "com.googlecode.protobuf-java-format" % "protobuf-java-format" % "1.2"
 )
 
 EclipseKeys.withSource := true

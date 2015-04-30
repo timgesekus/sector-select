@@ -5,13 +5,13 @@ import java.io.IOException;
 import joinSession.viewmodel.ChatViewModel;
 import joinSession.viewmodel.WorkspaceAssignementViewModel;
 import play.Logger;
-import actor.SessionChat.ChatMessage;
 import actor.messages.Subscribe;
 import akka.actor.AbstractActor;
 import akka.actor.ActorRef;
 import akka.actor.Props;
 import akka.japi.Creator;
 import akka.japi.pf.ReceiveBuilder;
+import chat.command.ChatCommand.ChatMessage;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -20,6 +20,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import eventBus.EventBus;
+import eventBus.Topics;
 
 public class JoinSessionWS extends AbstractActor
 {
@@ -28,14 +29,12 @@ public class JoinSessionWS extends AbstractActor
   final Logger.ALogger logger = Logger.of(this.getClass());
   private final ActorRef out;
   private String userName;
-  private ActorRef joinSessionPresenter;
   private EventBus eventBus;
   private int sessionId;
 
   public static Props props(
     ActorRef out,
     String userName,
-    ActorRef joinSessionPresenter,
     EventBus eventBus,
     int sessionId)
   {
@@ -45,12 +44,7 @@ public class JoinSessionWS extends AbstractActor
       @Override
       public JoinSessionWS create() throws Exception
       {
-        return new JoinSessionWS(
-          out,
-          userName,
-          joinSessionPresenter,
-          eventBus,
-          sessionId);
+        return new JoinSessionWS(out, userName, eventBus, sessionId);
       }
 
     });
@@ -60,14 +54,12 @@ public class JoinSessionWS extends AbstractActor
   public JoinSessionWS(
     ActorRef out,
     String userName,
-    ActorRef joinSessionPresenter,
     EventBus eventBus,
     int sessionId) throws JsonProcessingException
   {
     this.userName = userName;
     this.eventBus = eventBus;
     this.sessionId = sessionId;
-    this.joinSessionPresenter = joinSessionPresenter;
     receive(ReceiveBuilder
       .match(String.class, this::receiveJsonFromSocket)
       .match(
@@ -76,17 +68,15 @@ public class JoinSessionWS extends AbstractActor
       .match(ChatViewModel.class, this::receiveChatViewModel)
       .build());
 
-    subscribeToPresenter();
-
     this.out = out;
     this.userName = userName;
     objectMapper = new ObjectMapper();
-
-  }
-
-  private void subscribeToPresenter()
-  {
-    this.joinSessionPresenter.tell(new Subscribe(userName), self());
+    Props chatPresenterProps = ChatPresenter.props(
+      userName,
+      sessionId,
+      eventBus,
+      out);
+    getContext().actorOf(chatPresenterProps);
   }
 
   public void receiveJsonFromSocket(String json)
@@ -107,9 +97,15 @@ public class JoinSessionWS extends AbstractActor
     } else if (topic.equals("chatMessage"))
     {
       String message = jsonNode.get("message").asText();
-      ChatMessage chatLine = new ChatMessage(userName, sessionId, message);
-      eventBus.publish(new eventBus.Event("ChatMessage", chatLine));// sessionActor.tell(chatLine,
-                                                                    // self());
+      ChatMessage chatLine = ChatMessage
+        .newBuilder()
+        .setUserId(userName)
+        .setChatId("chat-" + sessionId)
+        .setMessage(message)
+        .build();
+      eventBus.publish(new eventBus.Event(
+        Topics.CHAT_COMMAND.toString(),
+        chatLine));
     }
 
   }

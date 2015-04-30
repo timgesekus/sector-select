@@ -1,9 +1,8 @@
 package controllers;
 
-import joinSessionView.JoinSessionPresenter;
+import static akka.pattern.Patterns.ask;
 import joinSessionView.JoinSessionWS;
 import play.Logger;
-import play.libs.Akka;
 import play.libs.F.Promise;
 import play.mvc.Controller;
 import play.mvc.Result;
@@ -12,9 +11,7 @@ import scala.concurrent.Future;
 import utils.WebSocketUtils;
 import viewmodels.exerciseselect.StartExercise;
 import akka.actor.ActorRef;
-import akka.actor.Props;
 import be.objectify.deadbolt.java.actions.SubjectPresent;
-import static akka.pattern.Patterns.ask;
 
 import com.google.inject.name.Named;
 
@@ -63,17 +60,9 @@ public class JoinSession extends Controller
     if (userName != null)
     {
       play.Logger.info("username " + userName);
-      Props joinSessionPresenterProps = JoinSessionPresenter.props(
-        userName,
-        eventBus,
-        sessionId,
-        sessionManager);
-      ActorRef joinSessionPresenter = Akka.system().actorOf(
-        joinSessionPresenterProps);
       return WebSocket.withActor(out -> JoinSessionWS.props(
         out,
         userName,
-        joinSessionPresenter,
         eventBus,
         sessionId));
     } else
