@@ -10,6 +10,11 @@ import be.objectify.deadbolt.core.models.Permission;
 @Entity
 public class UserPermission extends Model implements Permission
 {
+  /**
+   * 
+   */
+  private static final long serialVersionUID = 3080837459582832218L;
+
   @Id
   public Long id;
 

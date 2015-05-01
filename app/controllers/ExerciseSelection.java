@@ -14,15 +14,15 @@ import com.google.inject.name.Named;
 public class ExerciseSelection extends Controller
 {
 
-  private final ActorRef sessionManager;
+  private final ActorRef sessionService;
   private final ActorRef exerciseService;
 
   @Inject
   public ExerciseSelection(
-    @Named("SessionManager") ActorRef sessionManager,
+    @Named("SessionService") ActorRef sessionService,
     @Named("ExerciseService") ActorRef exerciseService)
   {
-    this.sessionManager = sessionManager;
+    this.sessionService = sessionService;
     this.exerciseService = exerciseService;
   }
 
@@ -42,7 +42,6 @@ public class ExerciseSelection extends Controller
       return WebSocket.withActor(out -> ExerciseSelectionWS.props(
         out,
         userName,
-        sessionManager,
         exerciseService));
     } else
     {

@@ -11,12 +11,11 @@ import akka.japi.Creator;
 import akka.japi.pf.ReceiveBuilder;
 import chat.command.ChatCommand.CloseChat;
 import chat.command.ChatCommand.CreateChat;
+import chat.error.ChatError.CreateChatFailed;
 import chat.event.ChatEvent.ChatClosed;
 import chat.event.ChatEvent.ChatCreated;
-import chat.error.ChatError.CreateChatFailed;
-import eventBus.Event;
 import eventBus.EventBus;
-import eventBus.Topics;
+import eventBus.Topic;
 
 public class ChatService extends AbstractActor
 {
@@ -43,7 +42,7 @@ public class ChatService extends AbstractActor
     logger.info("Chat service created");
     this.eventBus = eventBus;
     configureMessageHandling();
-    subscribteToChatCommands();
+    subscribteToChatSeriveCommands();
   }
 
   private void configureMessageHandling()
@@ -60,10 +59,10 @@ public class ChatService extends AbstractActor
     logger.info("Received unknown message {}", message);
   }
 
-  private void subscribteToChatCommands()
+  private void subscribteToChatSeriveCommands()
   {
     logger.info("Subscribing to chat commands");
-    eventBus.subscribe(self(), Topics.CHAT_COMMAND.toString());
+    eventBus.subscribe(self(), Topic.CHAT_SERVICE_COMMAND);
   }
 
   private void createChat(CreateChat createChat)
@@ -88,7 +87,7 @@ public class ChatService extends AbstractActor
         .newBuilder()
         .setChatId(chatId)
         .build();
-      eventBus.publish(Topics.CHAT_EVENT.toString(), chatCreated);
+      eventBus.publish(Topic.CHAT_SERVICE_EVENT, chatCreated);
 
     }
   }
@@ -97,6 +96,6 @@ public class ChatService extends AbstractActor
   {
     String chatId = closeChat.getChatId();
     ChatClosed chatCreated = ChatClosed.newBuilder().setChatId(chatId).build();
-    eventBus.publish(Topics.CHAT_EVENT.toString(), chatCreated);
+    eventBus.publish(Topic.CHAT_SERVICE_EVENT, chatCreated);
   }
 }

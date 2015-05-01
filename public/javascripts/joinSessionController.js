@@ -1,55 +1,32 @@
-var joinSessionApp = angular.module('joinSessionApp',  ['websocketmodule']);
+var joinSessionApp = angular.module('joinSessionApp',  ['ngWebSocket']);
 
-joinSessionApp.controller('JoinSessionController',['$scope','websocketService', function($scope, websocketService) {
-  $scope.sectors = [
-       ];
- 
-  websocketService.subscribe("workspaceAssignement",function(event) {
-    	$scope.sectors = event.workspaceAssignements;
-      $scope.$apply();  	
- });
-
-	$scope.select = function(sectorName) {
-		
-		console.log("event:" +  sectorName);
-		var selectEvent = {
-				topic : "select",
-				sector :sectorName
-		};
-		
-		websocketService.send(selectEvent)
-	};
-	
-	$scope.delete = function ( idx ) {
-		var item = $scope.items[idx]
-  	var event = {
-				eventName : "Remove",
-				"item" : item
-		};
-		websocketService.send(event)
-	};
-	var sessionId = $("#session").data("sessionid");
-	websocketService.connect(jsRoutes.controllers.JoinSession.joinSessionWS(sessionId).webSocketURL());
+joinSessionApp.controller('JoinSessionController',['$scope', function($scope) {
+  $scope.sectors = [];
 }]);
 
-joinSessionApp.controller('chatController',['$scope','websocketService', function($scope, websocketService) {
+joinSessionApp.controller('chatController',['$scope', '$websocket',function($scope, $websocket) {
 	$scope.chat = [];
 	$scope.input = "" ;
+	var sessionId = $("#session").data("sessionid");
+	var socket = $websocket(jsRoutes.controllers.Chat.chatWS(sessionId).webSocketURL());
+  
 	
-	websocketService.subscribe("ChatViewModel",function(event) {
-	console.log("message received " + event.topic);
-	console.log("message received " + event.messages);
+	socket.onMessage(function(event) {
+	var res = 	JSON.parse(event.data);
+	console.log("message received " + res.topic);
+	console.log("message received " + res.messages);
     
-	$scope.chat = event.messages;
+	$scope.chat = res.messages;
    	$scope.$apply();
 	});
 	
 	$scope.submit = function () {
+		console.log("New message: " + $scope.input);
 		var chatEvent = {
 				topic : "chatMessage",
 				message : $scope.input
 		}
-		websocketService.send(chatEvent)
+		socket.send(chatEvent)
 		$scope.input = "";
 	}
 }]);

@@ -3,7 +3,7 @@ package eventBus;
 import akka.event.japi.LookupEventBus;
 import akka.actor.ActorRef;
 
-public class EventBus extends LookupEventBus<Event, ActorRef, String>
+public class EventBus extends LookupEventBus<Event, ActorRef, Topic>
 {
   @Override
   public int mapSize()
@@ -23,20 +23,19 @@ public class EventBus extends LookupEventBus<Event, ActorRef, String>
     subscriber.tell(event.payload, event.sender);
   }
 
-  public void publish(String topic, Object message)
+  public void publish(Topic topic, Object message)
   {
     Event event = new Event(topic, message, ActorRef.noSender());
     publish(event);
   }
 
-  
-  public void publish(String topic,Object message, ActorRef sender)
+  public void publish(Topic topic, Object message, ActorRef sender)
   {
     Event event = new Event(topic, message, sender);
     publish(event);
   }
 
-  public String classify(Event event)
+  public Topic classify(Event event)
   {
     return event.topic;
   }

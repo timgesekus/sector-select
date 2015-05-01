@@ -2,10 +2,8 @@ package joinSessionView;
 
 import java.io.IOException;
 
-import joinSession.viewmodel.ChatViewModel;
 import joinSession.viewmodel.WorkspaceAssignementViewModel;
 import play.Logger;
-import actor.messages.Subscribe;
 import akka.actor.AbstractActor;
 import akka.actor.ActorRef;
 import akka.actor.Props;
@@ -20,20 +18,24 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import eventBus.EventBus;
-import eventBus.Topics;
+import eventBus.Topic;
 
 public class JoinSessionWS extends AbstractActor
 {
 
- 
   public static Props props(
     ActorRef out,
     String userName,
     EventBus eventBus,
-    int sessionId)
+    String sessionId)
   {
     return Props.create(new Creator<JoinSessionWS>()
     {
+
+      /**
+       * 
+       */
+      private static final long serialVersionUID = 1L;
 
       @Override
       public JoinSessionWS create() throws Exception
@@ -50,14 +52,14 @@ public class JoinSessionWS extends AbstractActor
   private final ActorRef out;
   private String userName;
   private EventBus eventBus;
-  private int sessionId;
+  private String sessionId;
   private String chatId;
-  
+
   public JoinSessionWS(
     ActorRef out,
     String userName,
     EventBus eventBus,
-    int sessionId) throws JsonProcessingException
+    String sessionId) throws JsonProcessingException
   {
     this.userName = userName;
     this.eventBus = eventBus;
@@ -67,21 +69,13 @@ public class JoinSessionWS extends AbstractActor
       .match(
         WorkspaceAssignementViewModel.class,
         this::receiveWorkspaceAssignementsViewModel)
-      .match(ChatViewModel.class, this::receiveChatViewModel)
       .build());
 
     this.out = out;
     this.userName = userName;
     this.chatId = "chat-" + sessionId;
-    
+
     objectMapper = new ObjectMapper();
-    Props chatPresenterProps = ChatPresenter.props(
-      userName,
-      sessionId,
-      chatId,
-      eventBus,
-      out);
-    getContext().actorOf(chatPresenterProps);
   }
 
   public void receiveJsonFromSocket(String json)
@@ -98,7 +92,7 @@ public class JoinSessionWS extends AbstractActor
       Logger.info("Select event: ");
       String workspace = jsonNode.get("sector").asText();
       WorkspaceSelection event = new WorkspaceSelection(workspace, userName);
-      eventBus.publish("workspaceSelectionEvent", event);
+      eventBus.publish(Topic.CHAT_COMMAND, event);
     } else if (topic.equals("chatMessage"))
     {
       String message = jsonNode.get("message").asText();
@@ -108,7 +102,7 @@ public class JoinSessionWS extends AbstractActor
         .setChatId(chatId)
         .setMessage(message)
         .build();
-      eventBus.publish(Topics.CHAT_COMMAND.toString(), chatLine);
+      eventBus.publish(Topic.CHAT_COMMAND, chatLine);
     }
 
   }
@@ -122,14 +116,6 @@ public class JoinSessionWS extends AbstractActor
     String sectorsAsJson = objectMapper
       .writeValueAsString(workspaceAssignementViewModel);
     out.tell(sectorsAsJson, self());
-  }
-
-  public void receiveChatViewModel(ChatViewModel chatViewModel)
-    throws JsonProcessingException
-  {
-    logger.info("Received a chat view model ");
-    String chatViewModelAsJson = objectMapper.writeValueAsString(chatViewModel);
-    out.tell(chatViewModelAsJson, self());
   }
 
   public static class PropCreater

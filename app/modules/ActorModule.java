@@ -3,8 +3,8 @@ package modules;
 import play.Logger;
 import play.libs.Akka;
 import services.ChatService;
+import services.SessionService;
 import actor.ExerciseService;
-import actor.SessionManager;
 import akka.actor.ActorRef;
 import akka.actor.Props;
 import eventBus.EventBus;
@@ -32,14 +32,14 @@ public class ActorModule extends AbstractModule
 
   @Provides
   @Singleton
-  @Named("SessionManager")
+  @Named("SessionService")
   ActorRef provideSessionManager(eventBus.EventBus eventBus)
   {
     try
     {
       Logger.info("Creating session manager");
-      Props props = SessionManager.props(eventBus);
-      return Akka.system().actorOf(props, "SessionManager");
+      Props props = SessionService.props(eventBus);
+      return Akka.system().actorOf(props, "SessionService");
     } catch (Exception e)
     {
       Logger.error("Failed in provide", e);
@@ -84,14 +84,14 @@ public class ActorModule extends AbstractModule
   }
 
   @Provides
-  JoinSession provideSessionController(
-    @Named("SessionManager") ActorRef sessionManager,
+  JoinSession provideJoinSession(
+    @Named("SessionService") ActorRef sessionService,
     EventBus eventBus)
   {
     try
     {
       Logger.info("Creating session controller");
-      return new JoinSession(sessionManager, eventBus);
+      return new JoinSession(sessionService, eventBus);
     } catch (Exception e)
     {
       Logger.error("Failed in provide", e);

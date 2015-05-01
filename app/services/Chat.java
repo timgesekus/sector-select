@@ -4,12 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import play.Logger;
-import chat.command.ChatCommand.ChatMessage;
 import akka.actor.AbstractActor;
-import akka.actor.ActorRef;
 import akka.actor.Props;
 import akka.japi.Creator;
 import akka.japi.pf.ReceiveBuilder;
+import chat.command.ChatCommand.ChatMessage;
 import chat.command.ChatCommand.RestoreChat;
 import chat.command.ChatCommand.UserJoinChat;
 import chat.command.ChatCommand.UserLeaveChat;
@@ -17,9 +16,8 @@ import chat.event.ChatEvent.MessageChated;
 import chat.event.ChatEvent.RestoreChatComplete;
 import chat.event.ChatEvent.UserJoinedChat;
 import chat.event.ChatEvent.UserLeftChat;
-import eventBus.Event;
 import eventBus.EventBus;
-import eventBus.Topics;
+import eventBus.Topic;
 
 public class Chat extends AbstractActor
 {
@@ -55,7 +53,7 @@ public class Chat extends AbstractActor
 
   private void subscribteToChatCommands()
   {
-    eventBus.subscribe(self(), Topics.CHAT_COMMAND.toString());
+    eventBus.subscribe(self(), Topic.CHAT_COMMAND);
   }
 
   private void configureMessageHandling()
@@ -84,14 +82,7 @@ public class Chat extends AbstractActor
         .setChatId(chatId)
         .setUserId(userId)
         .build();
-      MessageChated messageChated = MessageChated
-        .newBuilder()
-        .setChatId(chatId)
-        .setUserId(userId)
-        .setMessage(userId + "entered chat")
-        .build();
       publishAndStore(userJoinedChat);
-      publishAndStore(messageChated);
     }
   }
 
@@ -105,14 +96,7 @@ public class Chat extends AbstractActor
         .setChatId(chatId)
         .setUserId(userId)
         .build();
-      MessageChated messageChated = MessageChated
-        .newBuilder()
-        .setChatId(chatId)
-        .setUserId(userId)
-        .setMessage(userId + "left chat")
-        .build();
       publishAndStore(userLeftChat);
-      publishAndStore(messageChated);
     }
   }
 
@@ -136,15 +120,21 @@ public class Chat extends AbstractActor
 
   private void restoreChat(RestoreChat requestChat)
   {
-    logger.info("Restoration requst {} sender:{} ", requestChat.getChatId(), sender());
+    logger.info(
+      "Restoration requst {} sender:{} ",
+      requestChat.getChatId(),
+      sender());
     events.stream().forEach(event -> sendMessageToSender(event));
-    sendMessageToSender(RestoreChatComplete.newBuilder().setChatId(chatId).build());
+    sendMessageToSender(RestoreChatComplete
+      .newBuilder()
+      .setChatId(chatId)
+      .build());
   }
 
   private void publishAndStore(Object message)
   {
     events.add(message);
-    eventBus.publish(Topics.CHAT_EVENT.toString(), message);
+    eventBus.publish(Topic.CHAT_EVENT, message);
   }
 
   private void sendMessageToSender(Object event)

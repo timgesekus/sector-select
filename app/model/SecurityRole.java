@@ -12,6 +12,11 @@ import be.objectify.deadbolt.core.models.Role;
 @Entity
 public class SecurityRole extends Model implements Role
 {
+  /**
+   * 
+   */
+  private static final long serialVersionUID = -206551239908446959L;
+
   @Id
   public Long id;
 

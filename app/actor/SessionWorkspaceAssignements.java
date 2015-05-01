@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 import play.Logger;
 import eventBus.EventBus;
+import eventBus.Topic;
 import joinSessionView.JoinSessionWS.WorkspaceSelection;
 import actor.messages.Subscribe;
 import actor.messages.Unsubscribe;
@@ -29,6 +30,11 @@ public class SessionWorkspaceAssignements extends AbstractActor
     return Props.create(new Creator<SessionWorkspaceAssignements>()
     {
 
+      /**
+       * 
+       */
+      private static final long serialVersionUID = -2131856328526629468L;
+
       @Override
       public SessionWorkspaceAssignements create() throws Exception
       {
@@ -42,7 +48,7 @@ public class SessionWorkspaceAssignements extends AbstractActor
     this.eventBus = eventBus;
     workspaceAssignements = new WorkspaceAssignements();
     subscriptions = new Subscriptions();
-    this.eventBus.subscribe(self(), "workspaceSelectionEvent");
+    this.eventBus.subscribe(self(), Topic.CHAT_COMMAND);
     configureSectors();
     configureMessageHandling();
 

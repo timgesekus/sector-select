@@ -2,17 +2,12 @@ import modules.ActorModule;
 import play.Application;
 import play.GlobalSettings;
 import play.Logger;
-import play.libs.Akka;
-import services.ChatService;
 import akka.actor.ActorRef;
-import akka.actor.Props;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Key;
 import com.google.inject.name.Names;
-
-import eventBus.EventBus;
 
 public class Global extends GlobalSettings
 {

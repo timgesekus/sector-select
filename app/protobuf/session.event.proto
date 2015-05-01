@@ -1,0 +1,23 @@
+package session.event;
+
+
+message SessionStarted {
+  required string session_id = 1;
+  required string exercise_id = 2;
+  required string ownering_user_id = 3;
+  required string chat_id =4;
+}
+
+message SessionStoped {
+  required string session_id = 1;
+}
+
+
+message UserJoinedSession {
+  required string session_id = 1;
+  required string user_name = 2;
+}
+
+
+
+
