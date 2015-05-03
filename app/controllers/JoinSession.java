@@ -2,6 +2,7 @@ package controllers;
 
 import static akka.pattern.Patterns.ask;
 import session.event.SessionEvent.SessionStarted;
+import session.command.SessionComand.*;
 import joinSessionView.JoinSessionWS;
 import play.Logger;
 import play.libs.F.Promise;
@@ -52,9 +53,27 @@ public class JoinSession extends Controller
   }
 
   @SubjectPresent
-  public static Result joinSession(String sessionId)
+  public Promise<Result> joinSession(String sessionId)
   {
-    return ok(views.html.joinSession.render(sessionId));
+    RequestSessionStartedMessage requestSessionStartedMessage = RequestSessionStartedMessage
+      .newBuilder()
+      .setSessionId(sessionId)
+      .build();
+
+    // return ok(views.html.joinSession.render(sessionId));
+    Future<Object> startExerciseAnswer = ask(
+      sessionService,
+      requestSessionStartedMessage,
+      1000);
+    return Promise.wrap(startExerciseAnswer).map(this::handleExerciseStarted);
+  }
+
+  public Result joinSession(SessionStarted sessionStarted)
+  {
+    return ok(views.html.joinSession.render(
+      sessionStarted.getSessionId(),
+      sessionStarted.getChatId()));
+
   }
 
   public WebSocket<String> joinSessionWS(String sessionId)
@@ -79,8 +98,8 @@ public class JoinSession extends Controller
   {
     if (startExerciseAnswer instanceof SessionStarted)
     {
-      viewmodels.exerciseselect.JoinSession joinSession = (viewmodels.exerciseselect.JoinSession) startExerciseAnswer;
-      return joinSession(joinSession.sessionid);
+      SessionStarted sessionStarted = (SessionStarted) startExerciseAnswer;
+      return joinSession(sessionStarted);
     }
     return internalServerError("Failed to create session: "
         + startExerciseAnswer.toString());

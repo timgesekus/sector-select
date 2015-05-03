@@ -21,7 +21,7 @@ public class Chat extends Controller
 
   @Inject
   public Chat(
-    @Named("SessionManager") ActorRef sessionManager,
+    @Named("SessionService") ActorRef sessionManager,
     EventBus eventBus)
   {
     this.sessionManager = sessionManager;
@@ -29,9 +29,8 @@ public class Chat extends Controller
   }
 
   @SubjectPresent
-  public WebSocket<String> chatWS(String sessionId)
+  public WebSocket<String> chatWS(String chatId)
   {
-    String chatId = "chat-" + sessionId;
     Logger.info("Request for chat  with chatId " + chatId);
     String userName = session("userName");
     if (userName != null)

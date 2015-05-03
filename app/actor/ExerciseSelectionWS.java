@@ -34,7 +34,7 @@ public class ExerciseSelectionWS extends AbstractActor
 
   private final ActorRef out;
   private final String userName;
-  private final ActorRef groupsAndServices;
+  private final ActorRef exerciseService;
 
   public ExerciseSelectionWS(
     ActorRef out,
@@ -44,16 +44,27 @@ public class ExerciseSelectionWS extends AbstractActor
     Logger.info("ExerciseSelectionWebSocketHandler created");
     this.out = out;
     this.userName = userName;
-    this.groupsAndServices = groupsAndServices;
+    this.exerciseService = groupsAndServices;
 
     objectMapper = new ObjectMapper();
-    requestGroupsAndServices();
+    requestExercises();
+    receive(ReceiveBuilder.match(
+      ExercisesViewModel.class,
+      this::handleExerciseViewModel).build());
   }
 
-  private void requestGroupsAndServices()
+  private void requestExercises()
   {
     ExercisesRequest request = ExerciseService.createRequest(userName);
-    groupsAndServices.tell(request, self());
+    exerciseService.tell(request, self());
+  }
+
+  private void handleExerciseViewModel(ExercisesViewModel exercisesViewModel)
+    throws JsonProcessingException
+  {
+    String exerciseViewModelAsJson = objectMapper
+      .writeValueAsString(exercisesViewModel);
+    out.tell(exerciseViewModelAsJson, self());
   }
 
   public static class SelectionEvent

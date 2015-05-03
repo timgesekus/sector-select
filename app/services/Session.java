@@ -1,5 +1,7 @@
 package services;
 
+import play.Logger;
+import session.command.SessionComand.RequestSessionStartedMessage;
 import session.event.SessionEvent.SessionStarted;
 import chat.command.ChatCommand.CreateChat;
 import chat.event.ChatEvent.ChatCreated;
@@ -45,6 +47,7 @@ public class Session extends AbstractActor
   private String chatId;
   private boolean isChatCreated;
   private ActorRef creationRequestor;
+  final Logger.ALogger logger = Logger.of(this.getClass());
 
   public Session(
     String sessionId,
@@ -61,28 +64,58 @@ public class Session extends AbstractActor
     this.chatId = "chat-for-session-" + sessionId;
     this.isChatCreated = false;
 
-    CreateChat createChat = CreateChat.newBuilder().setChatId(chatId).build();
-    eventBus.publish(Topic.CHAT_COMMAND, createChat);
+    logger.info("Session started: {}", sessionId);
+
+    receive(ReceiveBuilder
+      .match(ChatCreated.class, this::chatCreated)
+      .match(
+        RequestSessionStartedMessage.class,
+        this::requestSessionStartMessage)
+      .build());
     eventBus.subscribe(self(), Topic.CHAT_SERVICE_EVENT);
     eventBus.subscribe(self(), Topic.SESSION_COMMAND);
 
-    receive(ReceiveBuilder.match(ChatCreated.class, this::chatCreated).build());
+    CreateChat createChat = CreateChat.newBuilder().setChatId(chatId).build();
+    eventBus.publish(Topic.CHAT_SERVICE_COMMAND, createChat);
   }
 
   private void chatCreated(ChatCreated chatCreated)
   {
+    logger.info("Chat created: {}", chatCreated.getChatId());
     if (chatCreated.getChatId().equals(chatId))
     {
       isChatCreated = true;
-      SessionStarted sessionStarted = SessionStarted
-        .newBuilder()
-        .setChatId(chatId)
-        .setSessionId(sessionId)
-        .setExerciseId(exerciseId)
-        .setOwneringUserId(ownerName)
-        .build();
+      SessionStarted sessionStarted = buildSessionStartedMessage();
       creationRequestor.tell(sessionStarted, self());
       eventBus.publish(Topic.SESSION_SERVICE_EVENT, sessionStarted);
+    }
+  }
+
+  private SessionStarted buildSessionStartedMessage()
+  {
+    SessionStarted sessionStarted = SessionStarted
+      .newBuilder()
+      .setChatId(chatId)
+      .setSessionId(sessionId)
+      .setExerciseId(exerciseId)
+      .setOwneringUserId(ownerName)
+      .build();
+    return sessionStarted;
+  }
+
+  private void requestSessionStartMessage(
+    RequestSessionStartedMessage requestSessionStartedMessage)
+  {
+    String requestSessionId = requestSessionStartedMessage.getSessionId();
+    if (requestSessionId.equals(sessionId))
+    {
+      SessionStarted sessionStartedMessage = buildSessionStartedMessage();
+      sender().tell(sessionStartedMessage, self());
+    } else
+    {
+      logger.error(
+        "Received requestSessionStartedMessage for unknown session {}",
+        sessionId);
     }
   }
 }

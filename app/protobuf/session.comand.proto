@@ -21,5 +21,9 @@ message UserSelectWorkspace {
   required string workspace_name = 3;
 }
 
+message RequestSessionStartedMessage {
+  required string session_id = 1;
+}
+
 
 

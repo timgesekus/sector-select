@@ -7,8 +7,8 @@ joinSessionApp.controller('JoinSessionController',['$scope', function($scope) {
 joinSessionApp.controller('chatController',['$scope', '$websocket',function($scope, $websocket) {
 	$scope.chat = [];
 	$scope.input = "" ;
-	var sessionId = $("#session").data("sessionid");
-	var socket = $websocket(jsRoutes.controllers.Chat.chatWS(sessionId).webSocketURL());
+	var chatId = $("#chatId").data("chatid");
+	var socket = $websocket(jsRoutes.controllers.Chat.chatWS(chatId).webSocketURL());
   
 	
 	socket.onMessage(function(event) {

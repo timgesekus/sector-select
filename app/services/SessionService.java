@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import play.Logger;
+import session.command.SessionComand.RequestSessionStartedMessage;
 import session.command.SessionComand.StartSession;
 import session.command.SessionComand.StopSession;
 import akka.actor.AbstractActor;
@@ -38,7 +39,7 @@ public class SessionService extends AbstractActor
   {
     this.eventBus = eventBus;
 
-    subscribteToChatSeriveCommands();
+    subscribteToChatServiceCommands();
     configureMessageHandling();
 
   }
@@ -48,16 +49,19 @@ public class SessionService extends AbstractActor
     receive(ReceiveBuilder
       .match(StartSession.class, this::startSession)
       .match(StopSession.class, this::stopSession)
+      .match(
+        RequestSessionStartedMessage.class,
+        this::requestSessionStartMessage)
       .matchAny(this::unhandled)
       .build());
   }
 
   public void unhandled(Object message)
   {
-    logger.info("Received unknown message {}", message);
+    logger.info("Received unknown message {} {}", message.getClass(), message);
   }
 
-  private void subscribteToChatSeriveCommands()
+  private void subscribteToChatServiceCommands()
   {
     logger.info("Subscribing to chat commands");
     eventBus.subscribe(self(), Topic.CHAT_SERVICE_COMMAND);
@@ -87,6 +91,23 @@ public class SessionService extends AbstractActor
     {
       ActorRef sessionToStop = sessions.get(sessionIdToStop);
       context().stop(sessionToStop);
+    }
+  }
+
+  private void requestSessionStartMessage(
+    RequestSessionStartedMessage requestSessionStartedMessage)
+  {
+    String sessionId = requestSessionStartedMessage.getSessionId();
+    if (sessions.containsKey(sessionId))
+    {
+      sessions.get(sessionId).forward(
+        requestSessionStartedMessage,
+        getContext());
+    } else
+    {
+      logger.error(
+        "Received requestSessionStartedMessage for unknown sessio {}",
+        sessionId);
     }
   }
 }

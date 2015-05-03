@@ -1,8 +1,9 @@
-@(sessionId: String) @main("Welcome to the sector select room") {
+@(sessionId: String, chatId:String) @main("Welcome to the sector select room") {
 
 <div data-ng-app="joinSessionApp">
-  <div id="session" data-sessionid="@sessionId"/>
-	<div ng-controller="JoinSessionController">
+  <div id="sessionId" data-sessionid="@sessionId"/>
+	<div id="chatId" data-chatid="@chatId"/>
+  <div ng-controller="JoinSessionController">
 		<table>
 			<tr ng-repeat="sector in sectors">
 				<td><button ng-disabled="{{!sector.toggable}}" ng-click="select(sector.name)" ng-init="count=0">Increment</button>
