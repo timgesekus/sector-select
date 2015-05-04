@@ -1,7 +1,7 @@
 package controllers;
 
-import joinSessionView.ChatPresenter;
-import joinSessionView.WorkspacesPresenter;
+import presenter.ChatPresenter;
+import presenter.WorkspacesPresenter;
 import play.Logger;
 import play.mvc.Controller;
 import play.mvc.WebSocket;

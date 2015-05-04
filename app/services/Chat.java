@@ -48,10 +48,10 @@ public class Chat extends AbstractActor
     this.chatId = chatId;
     this.eventBus = eventBus;
     configureMessageHandling();
-    subscribteToChatCommands();
+    subscribeToChatCommands();
   }
 
-  private void subscribteToChatCommands()
+  private void subscribeToChatCommands()
   {
     eventBus.subscribe(self(), Topic.CHAT_COMMAND);
   }

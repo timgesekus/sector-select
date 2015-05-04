@@ -9,7 +9,7 @@ message SessionStarted {
   required string chat_id =5;
 }
 
-message SessionStoped {
+message SessionStopped {
   required string session_id = 1;
 }
 
@@ -20,5 +20,8 @@ message UserJoinedSession {
 }
 
 
+message RestoreSessionsCompleted {
+
+}
 
 

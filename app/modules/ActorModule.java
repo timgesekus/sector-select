@@ -5,7 +5,7 @@ import play.libs.Akka;
 import services.ChatService;
 import services.SessionService;
 import services.WorkspacesService;
-import actor.ExerciseService;
+import services.ExerciseService;
 import akka.actor.ActorRef;
 import akka.actor.Props;
 import eventBus.EventBus;

@@ -1,4 +1,4 @@
-package actor;
+package services;
 
 import static akka.dispatch.Futures.future;
 import static akka.pattern.Patterns.pipe;

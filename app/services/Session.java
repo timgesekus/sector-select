@@ -15,6 +15,7 @@ import eventBus.EventBus;
 import eventBus.Topic;
 import akka.actor.AbstractActor;
 import akka.actor.ActorRef;
+import akka.actor.ActorSelection;
 import akka.actor.Props;
 import akka.japi.Creator;
 import akka.japi.pf.ReceiveBuilder;
@@ -154,7 +155,9 @@ public class Session extends AbstractActor
       logger.info("sending session started");
       SessionStarted sessionStarted = buildSessionStartedMessage();
       creationRequestor.tell(sessionStarted, self());
-      eventBus.publish(Topic.SESSION_SERVICE_EVENT, sessionStarted);
+      ActorSelection parent = getContext().actorSelection("..");
+      parent.tell(sessionStarted,self());
+      sender().tell(sessionStarted,self());
     }
   }
 

@@ -6,7 +6,6 @@
 GET     /                           controllers.Application.login()
 GET     /joinSession/:sessionId     @controllers.JoinSession.joinSession(sessionId: String)
 GET     /createSession/:exerciseId  @controllers.JoinSession.createSession(exerciseId: String)
-GET     /joinSessionWS/:sessionId   @controllers.JoinSession.joinSessionWS(sessionId: String)
 GET     /login                      controllers.Application.login()
 GET     /logout                     controllers.Application.logout()
 GET     /exerciseSelect             controllers.ExerciseSelection.exerciseSelect()

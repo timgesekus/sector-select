@@ -2,7 +2,8 @@ package actor;
 
 import play.Logger;
 import viewmodels.exerciseselect.ExercisesViewModel;
-import actor.ExerciseService.ExercisesRequest;
+import services.ExerciseService;
+import services.ExerciseService.ExercisesRequest;
 import akka.actor.AbstractActor;
 import akka.actor.ActorRef;
 import akka.actor.Props;

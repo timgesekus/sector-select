@@ -3,7 +3,6 @@ package controllers;
 import static akka.pattern.Patterns.ask;
 import session.event.SessionEvent.SessionStarted;
 import session.command.SessionComand.*;
-import joinSessionView.JoinSessionWS;
 import play.Logger;
 import play.libs.F.Promise;
 import play.mvc.Controller;
@@ -75,24 +74,6 @@ public class JoinSession extends Controller
       sessionStarted.getChatId(),
       sessionStarted.getWorkspacesId()));
 
-  }
-
-  public WebSocket<String> joinSessionWS(String sessionId)
-  {
-    Logger.info("sectors with sessionId " + sessionId);
-    String userName = session("userName");
-    if (userName != null)
-    {
-      play.Logger.info("username " + userName);
-      return WebSocket.withActor(out -> JoinSessionWS.props(
-        out,
-        userName,
-        eventBus,
-        sessionId));
-    } else
-    {
-      return WebSocketUtils.notAuthorizedWebSocket();
-    }
   }
 
   private Result handleExerciseStarted(Object startExerciseAnswer)
