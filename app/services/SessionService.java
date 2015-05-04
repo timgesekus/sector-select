@@ -108,6 +108,7 @@ public class SessionService extends AbstractActor
       logger.error(
         "Received requestSessionStartedMessage for unknown sessio {}",
         sessionId);
+      sessions.keySet().stream().forEach(session -> logger.info("Known session {}", session));
     }
   }
 }

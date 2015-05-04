@@ -1,5 +1,8 @@
 package services;
 
+
+import com.googlecode.protobuf.format.JsonFormat;
+
 import play.Logger;
 import session.command.SessionComand.RequestSessionStartedMessage;
 import session.event.SessionEvent.SessionStarted;
@@ -128,9 +131,18 @@ public class Session extends AbstractActor
       AddWorkspace addWorkspace = AddWorkspace
         .newBuilder()
         .setWorkspacesId(workspacesId)
-        .setWorkspaceName("EDFL")
+        .setWorkspaceName("WURL")
         .build();
+      logger.info("Sending stuff {}", JsonFormat.printToString(addWorkspace));
       eventBus.publish(Topic.WORKSPACES_COMMAND, addWorkspace);
+      addWorkspace = AddWorkspace
+          .newBuilder()
+          .setWorkspacesId(workspacesId)
+          .setWorkspaceName("WURH")
+          .build();
+        logger.info("Sending stuff {}", JsonFormat.printToString(addWorkspace));
+        eventBus.publish(Topic.WORKSPACES_COMMAND, addWorkspace);
+       
       sendSessionStartedIfComplete();
     }
   }

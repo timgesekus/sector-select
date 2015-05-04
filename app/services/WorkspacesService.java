@@ -76,11 +76,11 @@ public class WorkspacesService extends AbstractActor
       Props workspacesProps = Workspaces.props(workspacesId, eventBus);
       ActorRef chat = getContext().actorOf(workspacesProps, workspacesId);
       workspaces.put(workspacesId, chat);
-      WorkspacesCreated chatCreated = WorkspacesCreated
+      WorkspacesCreated workspacesCreated = WorkspacesCreated
         .newBuilder()
         .setWorkspacesId(workspacesId)
         .build();
-      eventBus.publish(Topic.WORKSPACES_SERVICE_EVENT, chatCreated);
+      eventBus.publish(Topic.WORKSPACES_SERVICE_EVENT, workspacesCreated);
 
     }
   }

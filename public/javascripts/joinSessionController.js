@@ -12,8 +12,16 @@ joinSessionApp.controller('joinSessionController',['$scope', '$websocket', funct
 	    
 		$scope.workspaces = res.assignements;
 	   	$scope.$apply();
-		});
+	});
 		
+	$scope.select = function (workspaceName) {
+		console.log("WorkspaceSelected: " + workspaceName);
+		var workspaceSelectedEvent = {
+				topic : "workspaceSelected",
+				workspaceName : workspaceName
+		}
+		socket.send(workspaceSelectedEvent);
+	}
 }]);
 
 joinSessionApp.controller('chatController',['$scope', '$websocket',function($scope, $websocket) {
@@ -38,7 +46,7 @@ joinSessionApp.controller('chatController',['$scope', '$websocket',function($sco
 				topic : "chatMessage",
 				message : $scope.input
 		}
-		socket.send(chatEvent)
+		socket.send(chatEvent);
 		$scope.input = "";
 	}
 }]);

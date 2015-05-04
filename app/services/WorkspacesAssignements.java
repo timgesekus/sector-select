@@ -4,10 +4,14 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import play.Logger;
+
 class WorkspacesAssignements
 {
   private WorkspacesAssignementsListener listener;
+  final Logger.ALogger logger = Logger.of(this.getClass());
 
+  
   public WorkspacesAssignements(WorkspacesAssignementsListener listener)
   {
     this.listener = listener;
@@ -27,13 +31,14 @@ class WorkspacesAssignements
 
   public void selectWorkspace(String workspaceName, String userId)
   {
-    if (isWorkspaceAssigned(workspaceName))
+    if (isWorkspaceUnassigned(workspaceName))
     {
       Optional<String> usersWorkspaceOptional = getFirstKeyByValue(
         assignements,
         Optional.of(userId));
       if (usersWorkspaceOptional.isPresent())
       {
+        logger.info("Workspaces is assigned {}", workspaceName);
         String usersWorkspace = usersWorkspaceOptional.get();
         deselectWorkspace(usersWorkspace, userId);
       }
@@ -46,21 +51,28 @@ class WorkspacesAssignements
 
   public void deselectWorkspace(String workspaceName, String userId)
   {
-    if (isWorkspaceAssigned(workspaceName))
+    if (isWorkspaceAssignedToUser(workspaceName,userId))
     {
       String assignedUser = assignements.get(workspaceName).get();
       if (assignedUser.equals(userId))
       {
-        assignements.remove(workspaceName);
+        assignements.put(workspaceName,Optional.empty());
         listener.workspaceDeselected(workspaceName, userId);
       }
     }
   }
 
-  private boolean isWorkspaceAssigned(String workspaceName)
+  private boolean isWorkspaceUnassigned(String workspaceName)
   {
     return assignements.containsKey(workspaceName)
         && !assignements.get(workspaceName).isPresent();
+  }
+
+  private boolean isWorkspaceAssignedToUser(String workspaceName, String userId)
+  {
+    return assignements.containsKey(workspaceName)
+        && assignements.get(workspaceName).isPresent() 
+        && assignements.get(workspaceName).get().equals(userId);
   }
 
   public static <T, E> Optional<T> getFirstKeyByValue(Map<T, E> map, E value)

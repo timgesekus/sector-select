@@ -1,6 +1,7 @@
 package services;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import play.Logger;
@@ -11,6 +12,7 @@ import workspaces.command.WorkspacesCommand.SelectWorkspace;
 import workspaces.event.WorkspacesEvent.WorkspaceAdded;
 import workspaces.event.WorkspacesEvent.WorkspaceDeselected;
 import workspaces.event.WorkspacesEvent.WorkspaceSelected;
+import workspaces.event.WorkspacesEvent.WorkspacesRestoreComplete;
 import akka.actor.AbstractActor;
 import akka.actor.Props;
 import akka.japi.Creator;
@@ -38,16 +40,17 @@ public class Workspaces extends AbstractActor implements
     });
   }
 
-  private String workspacesId;
-  private EventBus eventBus;
-  private List<Object> events = new ArrayList<>();
-  private WorkspacesAssignements workspacesAssignements;
+  private final String workspacesId;
+  private final EventBus eventBus;
+  private final List<Object> events = new ArrayList<>();
+  private final WorkspacesAssignements workspacesAssignements;
 
   public Workspaces(String workspacesId, EventBus eventBus)
   {
     logger.info("Workspaces with id {} created", workspacesId);
     this.workspacesId = workspacesId;
     this.eventBus = eventBus;
+    workspacesAssignements = new WorkspacesAssignements(this);
     configureMessageHandling();
     subscribteToWorkspacesCommands();
   }
@@ -75,9 +78,7 @@ public class Workspaces extends AbstractActor implements
 
   private void addWorkspace(AddWorkspace addWorkspace)
   {
-    logger.info("Workspace added {} ", addWorkspace.getWorkspaceName());
-
-    if (addWorkspace.getWorkspacesId().equals(workspacesId))
+       if (addWorkspace.getWorkspacesId().equals(workspacesId))
     {
       logger.info("Workspace added {} ", addWorkspace.getWorkspaceName());
       workspacesAssignements.addWorkspace(addWorkspace.getWorkspaceName());
@@ -111,7 +112,7 @@ public class Workspaces extends AbstractActor implements
       restoreWorkspaces.getWorkspacesId(),
       sender());
     events.stream().forEach(event -> sendMessageToSender(event));
-    sendMessageToSender(RestoreWorkspaces
+    sendMessageToSender(WorkspacesRestoreComplete
       .newBuilder()
       .setWorkspacesId(workspacesId)
       .build());

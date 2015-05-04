@@ -7,9 +7,9 @@
   <div ng-controller="joinSessionController">
 		<table>
 			<tr ng-repeat="workspace in workspaces">
-				<td><button ng-disabled="{{!workspace.selectable}}" ng-click="select(workspace.name)" ng-init="count=0">Increment</button>
-				<td>{{workspace.name}}</td>
-		    <td>{{workspace.userName}}</td>
+				<td><button ng-disabled="{{!workspace.selectable}}" ng-click="select(workspace.workspace_name)" ng-init="count=0">Increment</button>
+				<td>{{workspace.workspace_name}}</td>
+		    <td>{{workspace.user_id}}</td>
     
 			</tr>
 		</table>

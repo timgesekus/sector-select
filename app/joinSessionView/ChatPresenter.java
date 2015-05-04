@@ -158,7 +158,7 @@ public class ChatPresenter extends AbstractActor
   {
     if (userLeftChat.getChatId().equals(chatId))
     {
-      String joinMessage = userLeftChat.getUserId() + " entered chat";
+      String joinMessage = userLeftChat.getUserId() + " left chat";
       storeMessage(joinMessage);
       if (restored)
       {
