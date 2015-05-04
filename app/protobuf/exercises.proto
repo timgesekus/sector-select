@@ -1,0 +1,14 @@
+package exercises.messages;
+
+message RequestExercises {
+  required string user_name = 1;
+}
+
+message ExercisesResponse {
+  message Exercise {
+    required string exercise_id = 1;
+    required string exercise_name =2 ;
+  }
+  
+  repeated Exercise exercises = 1;
+}

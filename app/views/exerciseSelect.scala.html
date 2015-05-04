@@ -6,13 +6,8 @@
   <div ng-controller="exerciseSelectController">
     <div id="selectExercise">
       <ul>
-        <li ng-repeat="group in groups">
-         {{group.name}}
-        	<ul>
-        		<li ng-repeat="exercise in group.exercises">{{exercise.name}}
-        		<button ng-click="startExercise(exercise.id)">Start</button>
-        		</li>
-        	</ul>
+        <li ng-repeat="exercise in exercises">{{exercise.exercise_name}}
+          <button ng-click="startExercise(exercise.exercise_id)">Start</button>
         </li>
       </ul>
     </div>

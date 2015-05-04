@@ -1,6 +1,5 @@
 package services;
 
-
 import com.googlecode.protobuf.format.JsonFormat;
 
 import play.Logger;
@@ -137,13 +136,13 @@ public class Session extends AbstractActor
       logger.info("Sending stuff {}", JsonFormat.printToString(addWorkspace));
       eventBus.publish(Topic.WORKSPACES_COMMAND, addWorkspace);
       addWorkspace = AddWorkspace
-          .newBuilder()
-          .setWorkspacesId(workspacesId)
-          .setWorkspaceName("WURH")
-          .build();
-        logger.info("Sending stuff {}", JsonFormat.printToString(addWorkspace));
-        eventBus.publish(Topic.WORKSPACES_COMMAND, addWorkspace);
-       
+        .newBuilder()
+        .setWorkspacesId(workspacesId)
+        .setWorkspaceName("WURH")
+        .build();
+      logger.info("Sending stuff {}", JsonFormat.printToString(addWorkspace));
+      eventBus.publish(Topic.WORKSPACES_COMMAND, addWorkspace);
+
       sendSessionStartedIfComplete();
     }
   }
@@ -156,8 +155,8 @@ public class Session extends AbstractActor
       SessionStarted sessionStarted = buildSessionStartedMessage();
       creationRequestor.tell(sessionStarted, self());
       ActorSelection parent = getContext().actorSelection("..");
-      parent.tell(sessionStarted,self());
-      sender().tell(sessionStarted,self());
+      parent.tell(sessionStarted, self());
+      sender().tell(sessionStarted, self());
     }
   }
 

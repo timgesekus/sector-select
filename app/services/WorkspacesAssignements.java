@@ -11,7 +11,6 @@ class WorkspacesAssignements
   private WorkspacesAssignementsListener listener;
   final Logger.ALogger logger = Logger.of(this.getClass());
 
-  
   public WorkspacesAssignements(WorkspacesAssignementsListener listener)
   {
     this.listener = listener;
@@ -51,12 +50,12 @@ class WorkspacesAssignements
 
   public void deselectWorkspace(String workspaceName, String userId)
   {
-    if (isWorkspaceAssignedToUser(workspaceName,userId))
+    if (isWorkspaceAssignedToUser(workspaceName, userId))
     {
       String assignedUser = assignements.get(workspaceName).get();
       if (assignedUser.equals(userId))
       {
-        assignements.put(workspaceName,Optional.empty());
+        assignements.put(workspaceName, Optional.empty());
         listener.workspaceDeselected(workspaceName, userId);
       }
     }
@@ -68,10 +67,12 @@ class WorkspacesAssignements
         && !assignements.get(workspaceName).isPresent();
   }
 
-  private boolean isWorkspaceAssignedToUser(String workspaceName, String userId)
+  private
+    boolean
+    isWorkspaceAssignedToUser(String workspaceName, String userId)
   {
     return assignements.containsKey(workspaceName)
-        && assignements.get(workspaceName).isPresent() 
+        && assignements.get(workspaceName).isPresent()
         && assignements.get(workspaceName).get().equals(userId);
   }
 

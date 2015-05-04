@@ -1,18 +1,17 @@
-var exerciseSelectApp = angular.module('exerciseSelectApp',  ['websocketmodule']);
+var exerciseSelectApp = angular.module('exerciseSelectApp',   ['ngWebSocket']);
 
-exerciseSelectApp.controller('exerciseSelectController',['$scope','websocketService', function($scope, websocketService) {
-  $scope.sectors = [
+exerciseSelectApp.controller('exerciseSelectController',['$scope', '$websocket', function($scope, $websocket) {
+  $scope.exercises = [
        ];
  
-  
-  websocketService.subscribe("redirect",function(event) {
-  	window.location.href = event.url;
-  });
-
-  websocketService.subscribe("exercises",function(event) {
-    	$scope.groups = event.groups;
-    	$scope.$apply();
-    });
+	var socket = $websocket(jsRoutes.controllers.ExerciseSelection.exerciseSelectionWS().webSocketURL()); 
+	socket.onMessage(function(event) {
+		var res = 	JSON.parse(event.data);
+		console.log("message received " + res.assignements);
+	    
+		$scope.exercises = res.exercises;
+	   	$scope.$apply();
+	});
 	
 	$scope.startExercise = function (exerciseId) {
 		window.location.href=jsRoutes.controllers.JoinSession.createSession(exerciseId).absoluteURL();
@@ -24,6 +23,5 @@ exerciseSelectApp.controller('exerciseSelectController',['$scope','websocketServ
 		//websocketService.send(startExercise)
 
 	};
-	websocketService.connect(jsRoutes.controllers.ExerciseSelection.exerciseSelectionWS().webSocketURL());
 }]);
 

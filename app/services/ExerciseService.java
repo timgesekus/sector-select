@@ -2,27 +2,21 @@ package services;
 
 import static akka.dispatch.Futures.future;
 import static akka.pattern.Patterns.pipe;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
+import exercises.messages.Exercises;
+import exercises.messages.Exercises.ExercisesResponse;
+import exercises.messages.Exercises.ExercisesResponse.Exercise;
+import exercises.messages.Exercises.RequestExercises;
 import play.Logger;
 import scala.concurrent.ExecutionContextExecutor;
 import scala.concurrent.Future;
-import viewmodels.exerciseselect.ExercisesViewModel;
-import viewmodels.exerciseselect.ExercisesViewModel.Exercise;
-import viewmodels.exerciseselect.ExercisesViewModel.Group;
-import actor.ExerciseSelectionWS.SelectionEvent;
 import akka.actor.AbstractActor;
 import akka.actor.Props;
 import akka.japi.pf.ReceiveBuilder;
 
 /**
- * Service to retrieve exercises and groups, that are valid for a user.
- * Messages: {@link ExercisesRequest} : Request groups and services for a user,
- * replied with {@link ExerciseViewModel}. {@link ExerciseViewModel} : All
- * exercises belonging to the user.
+ * Service to retrieve exercises that are valid for a user. Messages:
+ * {@link ExercisesRequest} : Request groups and services for a user, replied
+ * with {@link Exercises}. : All exercises belonging to the user.
  *
  */
 public class ExerciseService extends AbstractActor
@@ -39,29 +33,20 @@ public class ExerciseService extends AbstractActor
   {
     dispatcher = context().system().dispatcher();
     receive(ReceiveBuilder
-      .match(ExercisesRequest.class, this::receiveRequest)
-      .match(SelectionEvent.class, this::receiveSelect)
+      .match(RequestExercises.class, this::exerciseRequest)
       .matchAny(o -> Logger.info("received unknown message" + o))
       .build());
   }
 
   // Overengineered for testing and demonstrating how not to block on long
   // running tasks.
-  public void receiveRequest(ExercisesRequest exercisesRequest)
+  public void exerciseRequest(RequestExercises requestExercises)
   {
     Logger.info("Receive exercise request");
-    Future<ExercisesViewModel> f = future(() -> {
-      return presentExercises(exercisesRequest.userName);
+    Future<ExercisesResponse> f = future(() -> {
+      return presentExercises(requestExercises.getUserName());
     }, dispatcher);
     pipe(f, dispatcher).to(sender());
-  }
-
-  public void receiveSelect(SelectionEvent selectionEvent)
-  {
-    if (selectionEvent.type.equals("group"))
-    {
-
-    }
   }
 
   public static ExercisesRequest createRequest(String userName)
@@ -77,21 +62,21 @@ public class ExerciseService extends AbstractActor
    * @param userName
    * @return
    */
-  private ExercisesViewModel presentExercises(String userName)
+  private ExercisesResponse presentExercises(String userName)
   {
-    List<Group> groups = new ArrayList<>();
+    ExercisesResponse.Builder exercisesBuilder = ExercisesResponse.newBuilder();
 
-    Group group = new Group();
-    group.name = "Week 1";
-    group.id = 1;
-    Exercise exercise = new Exercise();
-    exercise.name = "VT2002";
-    exercise.id = 1;
-    group.exercises = Arrays.asList(exercise);
+    Exercise.Builder exerciseBuilder = Exercise.newBuilder();
 
-    groups.add(group);
-    ExercisesViewModel exercises = new ExercisesViewModel(groups);
-    return exercises;
+    exerciseBuilder.setExerciseId("ex-1");
+    exerciseBuilder.setExerciseName("VT2002");
+    exercisesBuilder.addExercises(exerciseBuilder.build());
+
+    exerciseBuilder.setExerciseId("ex-2");
+    exerciseBuilder.setExerciseName("VT402");
+    exercisesBuilder.addExercises(exerciseBuilder.build());
+
+    return exercisesBuilder.build();
   }
 
   public static class ExercisesRequest

@@ -26,10 +26,9 @@ public class SessionService extends AbstractActor
 {
   public static Props props(EventBus eventBus)
   {
-    return Props.create(new Creator< SessionService >()
+    return Props.create(new Creator<SessionService>()
     {
       private static final long serialVersionUID = 279988858865554278L;
-
 
       @Override
       public SessionService create() throws Exception
@@ -39,12 +38,10 @@ public class SessionService extends AbstractActor
     });
   }
 
-
   private final Logger.ALogger logger = Logger.of(this.getClass());
-  private final Map< String, ActorRef > sessions = new HashMap<>();
+  private final Map<String, ActorRef> sessions = new HashMap<>();
   private final EventBus eventBus;
-  private final List< Object > events = new ArrayList<>();
-
+  private final List<Object> events = new ArrayList<>();
 
   public SessionService(EventBus eventBus)
   {
@@ -55,32 +52,31 @@ public class SessionService extends AbstractActor
 
   }
 
-
   private void configureMessageHandling()
   {
-    receive(ReceiveBuilder.match(StartSession.class, this::startSession)
-        .match(StopSession.class, this::stopSession)
-        .match(RequestSessionStartedMessage.class, this::requestSessionStartMessage)
-        .match(SessionStarted.class, this::sessionStarted)
-        .match(SessionStopped.class, this::sessionStopped)
-        .match(RestoreSessions.class, this::restoreSessions)
-        .matchAny(this::unhandled)
-        .build());
+    receive(ReceiveBuilder
+      .match(StartSession.class, this::startSession)
+      .match(StopSession.class, this::stopSession)
+      .match(
+        RequestSessionStartedMessage.class,
+        this::requestSessionStartMessage)
+      .match(SessionStarted.class, this::sessionStarted)
+      .match(SessionStopped.class, this::sessionStopped)
+      .match(RestoreSessions.class, this::restoreSessions)
+      .matchAny(this::unhandled)
+      .build());
   }
-
 
   public void unhandled(Object message)
   {
     logger.info("Received unknown message {} {}", message.getClass(), message);
   }
 
-
   private void subscribteToChatServiceCommands()
   {
     logger.info("Subscribing to chat commands");
     eventBus.subscribe(self(), Topic.CHAT_SERVICE_COMMAND);
   }
-
 
   private void startSession(StartSession startSession)
   {
@@ -90,20 +86,26 @@ public class SessionService extends AbstractActor
     if (sessions.containsKey(sessionId))
     {
       ActorRef session = sessions.get(sessionId);
-      RequestSessionStartedMessage requestSessionStartedMessage = RequestSessionStartedMessage.newBuilder()
-          .setSessionId(sessionId)
-          .build();
+      RequestSessionStartedMessage requestSessionStartedMessage = RequestSessionStartedMessage
+        .newBuilder()
+        .setSessionId(sessionId)
+        .build();
       session.forward(requestSessionStartedMessage, getContext());
-    }
-    else
+    } else
     {
-      Props sessionProps = Session.props(sessionId, exerciseId, owner, sender(), eventBus);
-      ActorRef session = getContext().actorOf(sessionProps, "session-" + sessionId);
+      Props sessionProps = Session.props(
+        sessionId,
+        exerciseId,
+        owner,
+        sender(),
+        eventBus);
+      ActorRef session = getContext().actorOf(
+        sessionProps,
+        "session-" + sessionId);
       sessions.put(sessionId, session);
 
     }
   }
-
 
   private void stopSession(StopSession stopSession)
   {
@@ -115,9 +117,10 @@ public class SessionService extends AbstractActor
     }
   }
 
-  private void restoreSessions(RestoreSessions restoreSessions) {
+  private void restoreSessions(RestoreSessions restoreSessions)
+  {
     events.stream().forEach(event -> sender().tell(event, self()));
-    sender().tell (RestoreSessionsCompleted.newBuilder().build(), self());
+    sender().tell(RestoreSessionsCompleted.newBuilder().build(), self());
   }
 
   private void sessionStarted(SessionStarted sessionStarted)
@@ -125,27 +128,28 @@ public class SessionService extends AbstractActor
     events.add(sessionStarted);
   }
 
-
   private void sessionStopped(SessionStopped sessionStopped)
   {
     events.add(sessionStopped);
   }
 
-
-  private void requestSessionStartMessage(RequestSessionStartedMessage requestSessionStartedMessage)
+  private void requestSessionStartMessage(
+    RequestSessionStartedMessage requestSessionStartedMessage)
   {
     String sessionId = requestSessionStartedMessage.getSessionId();
     if (sessions.containsKey(sessionId))
     {
       ActorRef session = sessions.get(sessionId);
       session.forward(requestSessionStartedMessage, getContext());
-    }
-    else
+    } else
     {
-      logger.error("Received requestSessionStartedMessage for unknown sessio {}", sessionId);
-      sessions.keySet()
-          .stream()
-          .forEach(session -> logger.info("Known session {}", session));
+      logger.error(
+        "Received requestSessionStartedMessage for unknown session {}",
+        sessionId);
+      sessions
+        .keySet()
+        .stream()
+        .forEach(session -> logger.info("Known session {}", session));
     }
   }
 }

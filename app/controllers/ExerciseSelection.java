@@ -3,27 +3,32 @@ package controllers;
 import play.mvc.Controller;
 import play.mvc.Result;
 import play.mvc.WebSocket;
+import presenter.ExercisesPresenter;
 import utils.WebSocketUtils;
-import actor.ExerciseSelectionWS;
 import akka.actor.ActorRef;
 import be.objectify.deadbolt.java.actions.SubjectPresent;
 
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 
+import eventBus.EventBus;
+
 public class ExerciseSelection extends Controller
 {
 
   private final ActorRef sessionService;
   private final ActorRef exerciseService;
+  private final EventBus eventBus;
 
   @Inject
   public ExerciseSelection(
     @Named("SessionService") ActorRef sessionService,
-    @Named("ExerciseService") ActorRef exerciseService)
+    @Named("ExerciseService") ActorRef exerciseService,
+    EventBus eventBus)
   {
     this.sessionService = sessionService;
     this.exerciseService = exerciseService;
+    this.eventBus = eventBus;
   }
 
   @SubjectPresent
@@ -39,10 +44,12 @@ public class ExerciseSelection extends Controller
     if (userName != null)
     {
       play.Logger.info("username " + userName);
-      return WebSocket.withActor(out -> ExerciseSelectionWS.props(
-        out,
+      return WebSocket.withActor(out -> ExercisesPresenter.props(
         userName,
-        exerciseService));
+        eventBus,
+        exerciseService,
+        sessionService,
+        out));
     } else
     {
       return WebSocketUtils.notAuthorizedWebSocket();

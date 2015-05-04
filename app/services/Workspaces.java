@@ -78,7 +78,7 @@ public class Workspaces extends AbstractActor implements
 
   private void addWorkspace(AddWorkspace addWorkspace)
   {
-       if (addWorkspace.getWorkspacesId().equals(workspacesId))
+    if (addWorkspace.getWorkspacesId().equals(workspacesId))
     {
       logger.info("Workspace added {} ", addWorkspace.getWorkspaceName());
       workspacesAssignements.addWorkspace(addWorkspace.getWorkspaceName());
