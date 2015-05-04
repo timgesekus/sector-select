@@ -1,14 +1,15 @@
-@(sessionId: String, chatId:String) @main("Welcome to the sector select room") {
+@(sessionId: String, chatId:String, workspacesId:String) @main("Welcome to the sector select room") {
 
 <div data-ng-app="joinSessionApp">
   <div id="sessionId" data-sessionid="@sessionId"/>
 	<div id="chatId" data-chatid="@chatId"/>
-  <div ng-controller="JoinSessionController">
+  <div id="workspacesId" data-workspacesid="@workspacesId"/>
+  <div ng-controller="joinSessionController">
 		<table>
-			<tr ng-repeat="sector in sectors">
-				<td><button ng-disabled="{{!sector.toggable}}" ng-click="select(sector.name)" ng-init="count=0">Increment</button>
-				<td>{{sector.name}}</td>
-		    <td>{{sector.userName}}</td>
+			<tr ng-repeat="workspace in workspaces">
+				<td><button ng-disabled="{{!workspace.selectable}}" ng-click="select(workspace.name)" ng-init="count=0">Increment</button>
+				<td>{{workspace.name}}</td>
+		    <td>{{workspace.userName}}</td>
     
 			</tr>
 		</table>

@@ -1,0 +1,30 @@
+package workspaces.command;
+
+message CreateWorkspaces {
+  required string workspaces_id = 1;
+}
+
+message RemoveWorkspaces {
+  required string workspaces_id = 1;
+}
+
+message AddWorkspace {
+  required string workspaces_id = 1;
+  required string workspace_name = 2;
+}
+
+message SelectWorkspace {
+  required string workspaces_id = 1;
+  required string workspace_name = 2;
+  required string user_id = 3;
+}
+
+message DeselectWorkspace {
+  required string workspaces_id = 1;
+  required string workspace_name = 2;
+  required string user_id = 3;
+}
+
+message RestoreWorkspaces {
+  required string workspaces_id = 1;
+}

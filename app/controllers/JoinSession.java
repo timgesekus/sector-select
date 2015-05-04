@@ -72,7 +72,8 @@ public class JoinSession extends Controller
   {
     return ok(views.html.joinSession.render(
       sessionStarted.getSessionId(),
-      sessionStarted.getChatId()));
+      sessionStarted.getChatId(),
+      sessionStarted.getWorkspacesId()));
 
   }
 

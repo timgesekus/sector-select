@@ -13,7 +13,7 @@ GET     /exerciseSelect             controllers.ExerciseSelection.exerciseSelect
 GET     /exerciseSelectWS           @controllers.ExerciseSelection.exerciseSelectionWS()
 
 GET     /chat/:sessionId            @controllers.Chat.chatWS(sessionId: String)
-
+GET     /workspaces/:workspacesId   @controllers.Workspaces.workspacesWS(workspacesId: String)
 POST    /loginSubmit/               controllers.Application.loginSubmit()
 
 # Map static resources from the /public folder to the /assets URL path

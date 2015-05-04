@@ -4,6 +4,7 @@ import play.Logger;
 import play.libs.Akka;
 import services.ChatService;
 import services.SessionService;
+import services.WorkspacesService;
 import actor.ExerciseService;
 import akka.actor.ActorRef;
 import akka.actor.Props;
@@ -40,6 +41,24 @@ public class ActorModule extends AbstractModule
       Logger.info("Creating session manager");
       Props props = SessionService.props(eventBus);
       return Akka.system().actorOf(props, "SessionService");
+    } catch (Exception e)
+    {
+      Logger.error("Failed in provide", e);
+    }
+    Logger.info("All is well");
+    return null;
+  }
+
+  @Provides
+  @Singleton
+  @Named("WorkspacesService")
+  ActorRef provideWorkspacesService(eventBus.EventBus eventBus)
+  {
+    try
+    {
+      Logger.info("Creating workspaces service");
+      Props props = WorkspacesService.props(eventBus);
+      return Akka.system().actorOf(props, "WorkspacesService");
     } catch (Exception e)
     {
       Logger.error("Failed in provide", e);

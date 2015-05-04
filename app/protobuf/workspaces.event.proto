@@ -1,0 +1,30 @@
+package workspaces.event;
+
+message WorkspacesCreated {
+  required string workspaces_id = 1;
+}
+
+message WorkspacesRemoved {
+  required string workspaces_id = 1;
+}
+
+message WorkspaceAdded {
+  required string workspaces_id = 1;
+  required string workspace_name = 2;
+}
+
+message WorkspaceSelected {
+  required string workspaces_id = 1;
+  required string workspace_name = 2;
+  required string user_id = 3;
+}
+
+message WorkspaceDeselected {
+  required string workspaces_id = 1;
+  required string workspace_name = 2;
+  required string user_id = 3;
+}
+
+message WorkspacesRestoreComplete {
+  required string workspaces_id = 1;
+}

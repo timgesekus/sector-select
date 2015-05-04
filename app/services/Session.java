@@ -3,6 +3,9 @@ package services;
 import play.Logger;
 import session.command.SessionComand.RequestSessionStartedMessage;
 import session.event.SessionEvent.SessionStarted;
+import workspaces.command.WorkspacesCommand.AddWorkspace;
+import workspaces.command.WorkspacesCommand.CreateWorkspaces;
+import workspaces.event.WorkspacesEvent.WorkspacesCreated;
 import chat.command.ChatCommand.CreateChat;
 import chat.event.ChatEvent.ChatCreated;
 import eventBus.EventBus;
@@ -46,8 +49,11 @@ public class Session extends AbstractActor
   private final EventBus eventBus;
   private String chatId;
   private boolean isChatCreated;
+  private boolean isWorkspacesCreated;
+
   private ActorRef creationRequestor;
   final Logger.ALogger logger = Logger.of(this.getClass());
+  private String workspacesId;
 
   public Session(
     String sessionId,
@@ -62,21 +68,45 @@ public class Session extends AbstractActor
     this.eventBus = eventBus;
     this.creationRequestor = creationRequestor;
     this.chatId = "chat-for-session-" + sessionId;
+    this.workspacesId = "workspaces-for-session-" + sessionId;
     this.isChatCreated = false;
 
     logger.info("Session started: {}", sessionId);
 
     receive(ReceiveBuilder
       .match(ChatCreated.class, this::chatCreated)
+      .match(WorkspacesCreated.class, this::workspacesCreated)
       .match(
         RequestSessionStartedMessage.class,
         this::requestSessionStartMessage)
       .build());
-    eventBus.subscribe(self(), Topic.CHAT_SERVICE_EVENT);
-    eventBus.subscribe(self(), Topic.SESSION_COMMAND);
+    subscribteToEvents();
+    createChat();
+    createWorkspaces();
 
+  }
+
+  private void subscribteToEvents()
+  {
+    eventBus.subscribe(self(), Topic.CHAT_SERVICE_EVENT);
+    eventBus.subscribe(self(), Topic.WORKSPACES_SERVICE_EVENT);
+    eventBus.subscribe(self(), Topic.SESSION_COMMAND);
+  }
+
+  private void createChat()
+  {
     CreateChat createChat = CreateChat.newBuilder().setChatId(chatId).build();
     eventBus.publish(Topic.CHAT_SERVICE_COMMAND, createChat);
+  }
+
+  private void createWorkspaces()
+  {
+    logger.info("send create workspaces {}", workspacesId);
+    CreateWorkspaces createWorkspaces = CreateWorkspaces
+      .newBuilder()
+      .setWorkspacesId(workspacesId)
+      .build();
+    eventBus.publish(Topic.WORKSPACES_SERVICE_COMMAND, createWorkspaces);
   }
 
   private void chatCreated(ChatCreated chatCreated)
@@ -85,22 +115,35 @@ public class Session extends AbstractActor
     if (chatCreated.getChatId().equals(chatId))
     {
       isChatCreated = true;
+      sendSessionStartedIfComplete();
+    }
+  }
+
+  private void workspacesCreated(WorkspacesCreated workspacesCreated)
+  {
+    logger.info("Workspaces created: {}", workspacesCreated.getWorkspacesId());
+    if (workspacesCreated.getWorkspacesId().equals(workspacesId))
+    {
+      isWorkspacesCreated = true;
+      AddWorkspace addWorkspace = AddWorkspace
+        .newBuilder()
+        .setWorkspacesId(workspacesId)
+        .setWorkspaceName("EDFL")
+        .build();
+      eventBus.publish(Topic.WORKSPACES_COMMAND, addWorkspace);
+      sendSessionStartedIfComplete();
+    }
+  }
+
+  private void sendSessionStartedIfComplete()
+  {
+    if (isChatCreated && isWorkspacesCreated)
+    {
+      logger.info("sending session started");
       SessionStarted sessionStarted = buildSessionStartedMessage();
       creationRequestor.tell(sessionStarted, self());
       eventBus.publish(Topic.SESSION_SERVICE_EVENT, sessionStarted);
     }
-  }
-
-  private SessionStarted buildSessionStartedMessage()
-  {
-    SessionStarted sessionStarted = SessionStarted
-      .newBuilder()
-      .setChatId(chatId)
-      .setSessionId(sessionId)
-      .setExerciseId(exerciseId)
-      .setOwneringUserId(ownerName)
-      .build();
-    return sessionStarted;
   }
 
   private void requestSessionStartMessage(
@@ -117,5 +160,18 @@ public class Session extends AbstractActor
         "Received requestSessionStartedMessage for unknown session {}",
         sessionId);
     }
+  }
+
+  private SessionStarted buildSessionStartedMessage()
+  {
+    SessionStarted sessionStarted = SessionStarted
+      .newBuilder()
+      .setChatId(chatId)
+      .setSessionId(sessionId)
+      .setExerciseId(exerciseId)
+      .setWorkspacesId(workspacesId)
+      .setOwneringUserId(ownerName)
+      .build();
+    return sessionStarted;
   }
 }

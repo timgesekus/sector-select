@@ -4,8 +4,9 @@ package session.event;
 message SessionStarted {
   required string session_id = 1;
   required string exercise_id = 2;
-  required string ownering_user_id = 3;
-  required string chat_id =4;
+  required string workspaces_id = 3;
+  required string ownering_user_id = 4;
+  required string chat_id =5;
 }
 
 message SessionStoped {

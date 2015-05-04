@@ -34,6 +34,9 @@ public class Global extends GlobalSettings
     ActorRef chatService = INJECTOR.getInstance(Key.get(
       ActorRef.class,
       Names.named("ChatService")));
+    ActorRef workspacesService = INJECTOR.getInstance(Key.get(
+      ActorRef.class,
+      Names.named("WorkspacesService")));
 
   }
 

@@ -1,7 +1,5 @@
 package actor;
 
-import java.io.IOException;
-
 import play.Logger;
 import viewmodels.exerciseselect.ExercisesViewModel;
 import actor.ExerciseService.ExercisesRequest;
@@ -10,9 +8,7 @@ import akka.actor.ActorRef;
 import akka.actor.Props;
 import akka.japi.pf.ReceiveBuilder;
 
-import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class ExerciseSelectionWS extends AbstractActor

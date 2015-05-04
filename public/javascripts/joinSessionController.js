@@ -1,7 +1,19 @@
 var joinSessionApp = angular.module('joinSessionApp',  ['ngWebSocket']);
 
-joinSessionApp.controller('JoinSessionController',['$scope', function($scope) {
-  $scope.sectors = [];
+joinSessionApp.controller('joinSessionController',['$scope', '$websocket', function($scope,$websocket) {
+	$scope.workspaces = [];
+	$scope.input = "" ;
+	var workspacesId = $("#workspacesId").data("workspacesid");
+	var socket = $websocket(jsRoutes.controllers.Workspaces.workspacesWS(workspacesId).webSocketURL());
+	socket.onMessage(function(event) {
+		var res = 	JSON.parse(event.data);
+		console.log("message received " + res.topic);
+		console.log("message received " + res.assignements);
+	    
+		$scope.workspaces = res.assignements;
+	   	$scope.$apply();
+		});
+		
 }]);
 
 joinSessionApp.controller('chatController',['$scope', '$websocket',function($scope, $websocket) {
