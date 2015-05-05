@@ -5,9 +5,13 @@ message RequestExercises {
 }
 
 message ExercisesResponse {
+  message Session {
+    required string session_id = 1;
+  }
   message Exercise {
     required string exercise_id = 1;
     required string exercise_name =2 ;
+    repeated Session sessions = 3;
   }
   
   repeated Exercise exercises = 1;

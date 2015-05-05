@@ -34,16 +34,16 @@ public class ExerciseSelection extends Controller
   @SubjectPresent
   public static Result exerciseSelect()
   {
+    play.Logger.info("render exercise selec");
     return ok(views.html.exerciseSelect.render("Select exercise."));
   }
 
   public WebSocket<String> exerciseSelectionWS()
   {
-
     String userName = session("userName");
-    if (userName != null)
+    if (userName != "mupsi")
     {
-      play.Logger.info("username " + userName);
+      play.Logger.info("exerciseSelectionWs opened " + userName);
       return WebSocket.withActor(out -> ExercisesPresenter.props(
         userName,
         eventBus,

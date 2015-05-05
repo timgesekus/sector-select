@@ -8,6 +8,11 @@
       <ul>
         <li ng-repeat="exercise in exercises">{{exercise.exercise_name}}
           <button ng-click="startExercise(exercise.exercise_id)">Start</button>
+          <ul>
+            <li ng-repeat="session in exercise.sessions">{{session.session_id}}
+              <button ng-click="joinSession(session.session_id)">join</button>
+            </li>  
+          </ul>
         </li>
       </ul>
     </div>
@@ -18,7 +23,6 @@
 
 <script src="@routes.Assets.at("third/angularjs/angular.min.js")" type="text/javascript"></script>
 <script src="@routes.Assets.at("third/angularjs/angular-resource.min.js")" type="text/javascript"></script>
-<script src="@routes.Assets.at("javascripts/websocketmodule.js")" type="text/javascript"></script>
 <script src="@routes.Assets.at("javascripts/exerciseSelectController.js")" type="text/javascript"></script>
 
 }

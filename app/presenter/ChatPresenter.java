@@ -133,11 +133,13 @@ public class ChatPresenter extends AbstractActor
 
   public void messageChated(MessageChated messageChated)
   {
-    logger.info("Message chated {}", messageChated.getChatId());
-    storeMessage(messageChated.getUserId() + ":" + messageChated.getMessage());
-    if (restored)
-    {
-      sendViewModelToSocket();
+    if (messageChated.getChatId().equals(chatId)) {
+      logger.info("Message chated {}", messageChated.getChatId());
+      storeMessage(messageChated.getUserId() + ":" + messageChated.getMessage());
+      if (restored)
+      {
+        sendViewModelToSocket();
+      }
     }
   }
 
@@ -225,6 +227,7 @@ public class ChatPresenter extends AbstractActor
   @Override
   public void postStop() throws Exception
   {
+    eventBus.unsubscribe(self());
     UserLeaveChat userLeaveChat = UserLeaveChat
       .newBuilder()
       .setChatId(chatId)

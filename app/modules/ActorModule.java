@@ -101,21 +101,21 @@ public class ActorModule extends AbstractModule
     }
     return null;
   }
-
-  @Provides
-  JoinSession provideJoinSession(
-    @Named("SessionService") ActorRef sessionService,
-    EventBus eventBus)
-  {
-    try
-    {
-      Logger.info("Creating session controller");
-      return new JoinSession(sessionService, eventBus);
-    } catch (Exception e)
-    {
-      Logger.error("Failed in provide", e);
-    }
-    Logger.info("All is well");
-    return null;
-  }
+//
+//  @Provides
+//  JoinSession provideJoinSession(
+//    @Named("SessionService") ActorRef sessionService,
+//    EventBus eventBus)
+//  {
+//    try
+//    {
+//      Logger.info("Creating session controller");
+//      return new JoinSession(sessionService, eventBus);
+//    } catch (Exception e)
+//    {
+//      Logger.error("Failed in provide", e);
+//    }
+//    Logger.info("All is well");
+//    return null;
+//  }
 }

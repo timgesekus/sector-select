@@ -4,7 +4,8 @@ exerciseSelectApp.controller('exerciseSelectController',['$scope', '$websocket',
   $scope.exercises = [
        ];
  
-	var socket = $websocket(jsRoutes.controllers.ExerciseSelection.exerciseSelectionWS().webSocketURL()); 
+  console.log("exercise select controller init");
+  var socket = $websocket(jsRoutes.controllers.ExerciseSelection.exerciseSelectionWS().webSocketURL()); 
 	socket.onMessage(function(event) {
 		var res = 	JSON.parse(event.data);
 		console.log("message received " + res.assignements);
@@ -16,12 +17,11 @@ exerciseSelectApp.controller('exerciseSelectController',['$scope', '$websocket',
 	$scope.startExercise = function (exerciseId) {
 		window.location.href=jsRoutes.controllers.JoinSession.createSession(exerciseId).absoluteURL();
 		console.log("Start exercise:" + exerciseId);
-		//var startExercise = {
-		//		topic : "startExercise",
-		//		id : 1
-		//};
-		//websocketService.send(startExercise)
-
+	};
+	
+	$scope.joinSession = function (sessionId) {
+		window.location.href=jsRoutes.controllers.JoinSession.joinSession(sessionId).absoluteURL();
+		console.log("Join session:" + sessionId);
 	};
 }]);
 

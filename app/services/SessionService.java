@@ -119,18 +119,25 @@ public class SessionService extends AbstractActor
 
   private void restoreSessions(RestoreSessions restoreSessions)
   {
-    events.stream().forEach(event -> sender().tell(event, self()));
+    logger.info("Received restoration request:{}", sender() );
+    events.stream().forEach(event -> {
+      sender().tell(event, self());
+      logger.info("Sending message:{}", event ); 
+    });
     sender().tell(RestoreSessionsCompleted.newBuilder().build(), self());
   }
 
   private void sessionStarted(SessionStarted sessionStarted)
   {
+    logger.info("Session started");
     events.add(sessionStarted);
+    eventBus.publish(Topic.SESSION_SERVICE_EVENT, sessionStarted);
   }
 
   private void sessionStopped(SessionStopped sessionStopped)
   {
     events.add(sessionStopped);
+    eventBus.publish(Topic.SESSION_SERVICE_EVENT, sessionStopped);
   }
 
   private void requestSessionStartMessage(

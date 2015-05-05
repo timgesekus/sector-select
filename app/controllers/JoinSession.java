@@ -1,6 +1,9 @@
 package controllers;
 
 import static akka.pattern.Patterns.ask;
+
+import javax.inject.Inject;
+
 import session.event.SessionEvent.SessionStarted;
 import session.command.SessionComand.*;
 import play.Logger;
@@ -24,6 +27,7 @@ public class JoinSession extends Controller
   private final ActorRef sessionService;
   private EventBus eventBus;
 
+  @Inject
   public JoinSession(
     @Named("SessionService") ActorRef sessionService,
     EventBus eventBus)
