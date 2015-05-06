@@ -5,6 +5,7 @@ message Workspaces {
    required string workspace_name = 1;
    required string user_id = 2;
    required bool selectable = 3;
+   required string action = 4;
   } 
   required string topic = 1;
   repeated Assignement assignements = 2;

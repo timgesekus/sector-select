@@ -156,7 +156,6 @@ public class Session extends AbstractActor
       creationRequestor.tell(sessionStarted, self());
       ActorSelection parent = getContext().actorSelection("..");
       parent.tell(sessionStarted, self());
-      sender().tell(sessionStarted, self());
     }
   }
 

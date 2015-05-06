@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import play.Logger;
+import workspaces.command.WorkspacesCommand.DeselectWorkspace;
 import workspaces.command.WorkspacesCommand.RestoreWorkspaces;
 import workspaces.event.WorkspacesEvent.WorkspaceAdded;
 import workspaces.event.WorkspacesEvent.WorkspaceDeselected;
@@ -178,6 +179,15 @@ public class WorkspacesPresenter extends AbstractActor
           .build();
       eventBus.publish(Topic.WORKSPACES_COMMAND, selectWorkspace);
 
+    } else if (topic.equals("workspaceDeselected")){
+      String workspaceName = extractWorkspaceName(jsonNode);
+      DeselectWorkspace deselectWorkspace = DeselectWorkspace.newBuilder()
+          .setWorkspacesId(workspacesId)
+          .setUserId(userName)
+          .setWorkspaceName(workspaceName)
+          .build();
+      eventBus.publish(Topic.WORKSPACES_COMMAND, deselectWorkspace);
+
     }
     else
     {
@@ -207,11 +217,16 @@ public class WorkspacesPresenter extends AbstractActor
     workspaceAssignements.keySet()
         .stream()
         .forEach(workspaceName -> {
+          String assignedUser = workspaceAssignements.get(workspaceName);
+          boolean isAssignedToUser = assignedUser.equals(userName);
+          boolean isUnassigned = assignedUser.equals(""); 
+          boolean isSelectable = isAssignedToUser || isUnassigned;
+          String action = isAssignedToUser ? "deselect" : "select";
           Assignement assignement = Assignement.newBuilder()
               .setWorkspaceName(workspaceName)
               .setUserId(workspaceAssignements.get(workspaceName))
-              .setSelectable(workspaceAssignements.get(workspaceName)
-                  .equals(""))
+              .setSelectable( isSelectable )
+              .setAction(action)
               .build();
           builder.addAssignements(assignement);
         });

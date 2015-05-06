@@ -22,6 +22,15 @@ joinSessionApp.controller('joinSessionController',['$scope', '$websocket', funct
 		}
 		socket.send(workspaceSelectedEvent);
 	}
+	
+	$scope.deselect = function (workspaceName) {
+		console.log("WorkspaceDeselected: " + workspaceName);
+		var workspaceDeselectedEvent = {
+				topic : "workspaceDeselected",
+				workspaceName : workspaceName
+		}
+		socket.send(workspaceDeselectedEvent);
+	}
 }]);
 
 joinSessionApp.controller('chatController',['$scope', '$websocket',function($scope, $websocket) {
