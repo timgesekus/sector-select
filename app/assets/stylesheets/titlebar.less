@@ -1,0 +1,89 @@
+@import 'libs/_theme.less';
+
+/*
+.bootstrap-styles {
+    @import (less) "bootstrap-3.3.4/css/bootstrap.css";
+}
+*/
+
+
+.titlebar {
+    font-family: 			  @defaultFont;
+    font-size: 				  1.5em;
+    background-color:		@headerDark;
+    display:				    flex;
+    width:					    100%;
+    min-height:				  1em;
+    position:           absolute;
+    left:               0em;
+    top:                0em;
+}
+
+.logoutWrapper {
+    font-size:          24px;
+    color:              white;  
+    padding-top:        0.2em;
+    padding-right:      0.5em;
+    text-align:         right;
+    text-decoration:    none;
+    flex:               1 0 0;
+}
+
+.dfslogo {
+    top:					      0.5em;
+    left:					      1.8em;
+    text-align:				  left;
+    background:				  url('../images/dfs.jpg');
+    flex:					      11 0 0;
+}
+
+.applicationName {
+    color:					    white;
+    font-weight:			  bold;
+    font-size:				  0.444em;
+    text-transform:			uppercase;
+    letter-spacing:			-1px;
+    top:					      3.5em;
+    left:					      1.8em;
+    text-align:				  left;
+    padding:				    0.5em;
+    flex:					      1 0 0;
+}
+
+.applicationName > span { 
+    color:              @newsimBlue;
+}
+
+.userName {
+    font-size:				  0.444em;
+    font-weight:			  bold;
+    color:					    white;
+    top:					      0.5em;
+    text-align:				  center;
+    padding:				    0.5em;
+    flex:					      1 0 0;
+}
+
+.userNameText {
+    padding-left:       1em;
+}
+
+
+a:link {
+    text-decoration:    none; 
+    color:              white;
+}
+
+a:visited {
+    text-decoration:    none; 
+    color:              white;
+}
+
+a:active {
+    text-decoration:    none;
+}
+
+td a:hover {
+    text-decoration:    underline; 
+    color:              @newsimBlue;
+}

@@ -1,8 +1,42 @@
 @(myForm: Form[Application.User]) @main("Welcome to the sector select room") {
+<link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/login.css")">
 
+        
+        <div class="bodybkg">
+                   <div class="container">
+               <form class="loginform" action="@routes.Application.loginSubmit()" method="POST">
+                   <h2>NEWSIM Web Login</h2>
+                   <p>
+                       <label for="userName">userName</label>
+                       <input id ="username" type="text" name="userName" placeholder="Username or email" required>
+                   </p>
+                   <p>
+                       <label for="password">Password</label>
+                       <input id="password" type="password" name='password' placeholder="Password" required> 
+                   
+                   
+                       <label><input type="checkbox"> Remember me</label>
+                   </p>
+
+                   <p>
+                    <input type="submit" name="submit" value="Login">
+                    <!-- <button class="btn" type="submit">Sign in</button> -->
+                   </p>       
+               </form>
+           </container>
+            </div>
+            
+            
+            
+            
+      
+
+<!-- 
 @helper.form(action = routes.Application.loginSubmit()) {
     @helper.inputText(myForm("userName"))
     @helper.inputPassword(myForm("password"))
     <input type="submit" value="send"/>
 }
+ -->
 }
+

@@ -1,0 +1,154 @@
+@import 'libs/_theme.less';
+
+.simulationBar {
+    font-size: 				24px;
+    font-family: 			@defaultFont;
+    background-color: 		@headerDark;
+    display: 				flex;
+  /*  width: 					48em; */
+    width: 					100%;
+    min-height: 			1em;
+    position:           absolute;
+    left:               0em;
+    top:                1.52em;
+}
+
+.dfslogo {
+	background: 			url('../images/dfs.jpg');
+    top: 					0.5em;
+    left: 					1.8em;
+    text-align: 			left;
+    flex: 					11 0 0;
+}
+
+
+.instanceInput {
+    font-size: 				16px;
+    font-weight: 			bold;
+    background-color: 		@headerDark;
+    color: 					white;
+    white-space: 			nowrap;
+    padding-bottom: 		0.25em;
+    padding-left: 			0.5em;
+    padding-right: 			1em;
+    border: 				none;
+    flex: 					1 0 0;
+}
+
+
+.languageModelMenu {
+    font-size: 				16px;
+    font-weight: 			bold;
+    top: 					0.5em;
+    left: 					1.8em;
+    text-align: 			left;
+    flex: 					26 0 0;
+    padding-top: 			0.5em;
+    padding-left: 			0.5em;
+    padding-right: 			1em;
+}
+
+.terminateButton {
+    font-size: 				20px;
+    font-weight: 			bold;
+    color: 					@terminateButtonFontColor;
+    text-decoration: 		none;
+    top: 					0.5em;
+    text-align: 			right;
+    padding-right:			1em;
+    padding-top:			0.1em;
+    padding-bottom:			0.1em;
+    flex:					1 0 0;
+}
+
+.runButtonWrapper {
+    font-size:          24px;
+    color:              @runButtonFontColor;  
+    padding-top:        0.2em;
+    padding-right:      0.5em;
+    text-align:         right;
+    text-decoration:    none;
+    flex:               1 0 0;
+}
+
+.runButton {
+    font-size:				20px;
+    font-weight:			bold;
+    color: 					@runButtonFontColor;
+    text-decoration:		none;
+    top:					0.5em;
+    text-align:				right;
+    padding-right:			1em;
+    padding-top:			0.3em;
+    padding-bottom:			0.3em;
+    flex:					1 0 0;
+}
+
+.toolButton {
+    font-size:				16px;
+    font-weight:			bold;
+    color:					white;
+    text-decoration:		none;
+    top:					0.5em;
+    text-align:				right;
+    padding-right:			4em;
+    padding-top:			0.45em;
+    padding-bottom:			0.3em;
+    flex:					1 0 0;
+}
+
+nav {
+    background-color:		@defaultFont;
+}
+
+nav ul {
+    padding:				0px;
+    margin:					0px;
+    background-color:		@defaultFont;
+}
+
+nav ul:after {
+    clear:					both;
+    content:				" ";
+    display:				block;
+    font-size:				0;
+    height:					0;
+    visibility:				hidden;
+}
+
+nav ul, nav ul li {
+    background-color:		@defaultFont;
+}
+
+nav ul li {
+    list-style:				none;
+    float:					left;
+}
+
+nav ul li a, nav ul li {
+    text-decoration:		none;
+    display:				block;
+    color:					white;
+    padding:				0em 0.70em 0em 0em;
+}
+
+nav ul li:hover > ul {
+    visibility:				visible;
+}
+
+nav ul li ul{
+    display:				inline;
+    visibility:				hidden;
+    position:				absolute;
+    padding:				0px;
+}
+
+nav ul li ul li{
+    float:					none;
+    text-align:				left;
+}
+
+nav ul li ul li a:hover{
+    color:					white;
+}
+

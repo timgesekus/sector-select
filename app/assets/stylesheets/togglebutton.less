@@ -1,0 +1,88 @@
+@width: 50px;
+@height: 20px;
+@checkedText: "";
+@checkedColor: #59bc65;
+@uncheckedText: "";
+@uncheckedColor: #ce3e3e;
+@transitionSpeed: .5s;
+
+.custom-check{
+    width: @width;
+    height: @height;
+    border-radius: @height;
+    border: 3px solid #e5e5e5;
+    background: #f5f5f5;
+    display: inline-block;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    -webkit-box-shadow: 0px 0px 5px 0px rgba(50, 50, 50, 0.75);
+    -moz-box-shadow:    0px 0px 5px 0px rgba(50, 50, 50, 0.75);
+    box-shadow:         0px 0px 5px 0px rgba(50, 50, 50, 0.75);  
+    .transition(@transitionSpeed);
+}
+
+.custom-check input{
+    display: none;
+}
+
+.custom-check i{
+    width: @height - 2;
+    height: @height - 2;
+    border-radius: @height - 2;
+    content: " ";
+    position: absolute;
+    left: 0;
+    top: -1px;
+    border: 2px solid #b9b9b9;
+    .transition(@transitionSpeed);
+    background: #ececec; /* Old browsers */
+    background: -moz-radial-gradient(center, ellipse cover,  #ececec 0%, #c8c8c8 100%); /* FF3.6+ */
+    background: -webkit-gradient(radial, center center, 0px, center center, 100%, color-stop(0%,#ececec), color-stop(100%,#c8c8c8)); /* Chrome,Safari4+ */
+    background: -webkit-radial-gradient(center, ellipse cover,  #ececec 0%,#c8c8c8 100%); /* Chrome10+,Safari5.1+ */
+    background: -o-radial-gradient(center, ellipse cover,  #ececec 0%,#c8c8c8 100%); /* Opera 12+ */
+    background: -ms-radial-gradient(center, ellipse cover,  #ececec 0%,#c8c8c8 100%); /* IE10+ */
+    background: radial-gradient(ellipse at center,  #ececec 0%,#c8c8c8 100%); /* W3C */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ececec', endColorstr='#c8c8c8',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
+}
+
+.custom-check input:checked + i{
+    left: @width - @height - 2;
+}
+.custom-check input + i + span{
+    display: block; 
+}
+
+.custom-check input + i + span:after{
+    position: absoulute;
+    display: block;
+    width: @width - 20;
+    padding-right: 20px;
+    height: @height;
+    line-height: @height;
+    content: @uncheckedText;
+    background: @uncheckedColor;
+    color: darken(@uncheckedColor, 15%);
+    font-size: @height / 2;
+    font-family: Arial, sans-serif;
+    font-weight: 600;
+    text-align: right;
+    .transition(@transitionSpeed);
+}
+
+.custom-check input:checked + i + span:after{
+    content: @checkedText;
+    background: @checkedColor;
+    color: darken(@checkedColor, 15%);
+    width: @width - 20;
+    text-align: left;
+    padding-right: 0;
+    padding-left: 20px;
+}
+
+.transition(@speed){
+    -webkit-transition: all @speed ease;
+    -moz-transition: all @speed ease;
+    -o-transition: all @speed ease;
+    transition: all @speed ease;
+}

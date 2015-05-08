@@ -1,10 +1,200 @@
-@(sessionId: String, chatId:String, workspacesId:String) @main("Welcome to the sector select room") {
+@(sessionId: String, chatId:String, workspacesId:String, userName:String) @main("Welcome to the sector select room") {
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+<script src="@routes.Assets.at("javascripts/guieffects.js")" type="text/javascript"></script>
+   
+<link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/simulationroom.css")">
+<link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/titlebar.css")">
+<link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/simulationbar.css")">
+<link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/togglebutton.css")">
+<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
 
 <div data-ng-app="joinSessionApp">
-  <div id="sessionId" data-sessionid="@sessionId"/>
-	<div id="chatId" data-chatid="@chatId"/>
-  <div id="workspacesId" data-workspacesid="@workspacesId"/>
-  <div ng-controller="joinSessionController">
+ <div id="sessionId" data-sessionid="@sessionId"/>
+ <div id="chatId" data-chatid="@chatId"/>
+ <div id="workspacesId" data-workspacesid="@workspacesId"/>
+  <div class="titlebar">
+    <div class="applicationName">           
+      <span>NEWSIM</span> Web
+    </div>       
+    <div class="userName">    
+      User: @userName                            
+    </div>
+    <div class="logoutWrapper">
+      <a href="@routes.Application.login()">
+        <i class="fa fa-sign-out"></i>
+      </a>    
+    </div>
+  </div>
+  <div class="simulationBar">
+    <div>
+      <input class="instanceInput" type="text" name="instance" placeholder=@sessionId-@userName>
+    </div>    
+    <div class="languageModelMenu">
+      <nav>
+        <ul>
+          <li>
+            <a href="#">SpeechModel</a>
+            <ul>
+              <li><a href="#">DE5</a></li>
+              <li><a href="#">DE5-G</a></li>
+              <li><a href="#">DE3</a></li>
+              <li><a href="#">US2</a></li>
+              <li><a href="#">US2-G</a></li>
+            </ul>
+          </li>
+        </ul>
+      </nav>
+     </div>
+     
+     <div id="runtime">
+       <a class="runButtonWrapper" href=""><i class="fa fa-power-off"></i></a>
+     </div> 
+    </div>
+     <!-- 
+     <canvas id="myCanvas">
+     </canvas>
+      --> 
+<div class="simulationRoom">
+                 
+            <div class="leftSide">
+                <div ng-controller="joinSessionController" id="airspacePanelGroup">
+                    <div id="airspacePanel">
+                        <table id="airspacePanelContent"> 
+                            <div class="positionMenuTable">
+                                <tr> 
+                                    <th class="tableHeader">
+                                        <i class="fa fa-plane fa-2x"></i>
+                                    </th> 
+                                    <th class="tableHeader">
+                                        <i class="fa fa-user fa-2x"></i>
+                                    </th>
+                                    <th class="tableHeader"></th>
+                                </tr>
+                                
+                               <tr ng-repeat="workspace in workspaces"> 
+                                    <td>{{workspace.workspace_name}}</td> 
+                                    <td> 
+                                        <div class="oversize">
+                                            <span>{{workspace.user_id}}</span>
+                                        </div>
+                                    </td>
+                                    <td class="checkfield"><button ng-disabled="{{!workspace.selectable}}" ng-click="{{workspace.action}}(workspace.workspace_name)" ng-init="count=0">{{workspace.action}}</button></td>
+                                </tr>
+                               </tr>
+                            </div>
+                        </table>
+                    </div>
+                    
+                    <div id="airspacePanelButton">
+                        <i class="fa fa-user"></i>   
+                    </div>
+                </div>
+            
+                <div id="simChatPanelGroup">
+                                           
+                        
+                    <div id="simChatPanel" ng-controller="chatController">
+                        <i id="simChatContent" class="fa fa-weixin fa-2x">
+                        <ul>
+                            <li ng-repeat="line in chat  track by $index">
+                               {{line}}
+                            </li>
+                            <li>   <input ng-keyup="($event.which === 13)?submit():0" ng-model="input"> <li>
+                           </ul>
+                        </i>          
+                         
+                          
+                           
+                      
+                    </div>
+                    <div id="simChatPanelButton">
+                      <i class="fa fa-weixin"></i>     
+                    </div>
+                </div>
+                
+                <div id="toolPanelGroup">
+                    <div id="toolPanel">
+                        <table id="toolTable"> 
+                            <div>
+                                <tr> 
+                            
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <label class="custom-check">
+                                            <input type="checkbox" name="wheather" unchecked/>
+                                            <i></i> 
+                                            <span></span>
+                                        </label>
+                                    </td>
+                                    <td> 
+                                        Weather
+                                    </td>                            
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <label class="custom-check">
+                                            <input type="checkbox" name="airports" checked/>
+                                            <i></i> 
+                                            <span></span>
+                                        </label>
+                                    </td>
+                                    <td> 
+                                        Airports
+                                    </td>
+                                </tr>
+                                <tr> 
+                                    <td>
+                                        <label class="custom-check">
+                                            <input type="checkbox" name="runways" unchecked/>
+                                            <i></i> 
+                                            <span></span>
+                                        </label>
+                                    </td>
+                                    <td> 
+                                        Runways
+                                    </td>
+                                </tr>
+                                <tr>
+                                   <td>
+                                        <label class="custom-check">
+                                            <input type="checkbox" name="parachute" unchecked/>
+                                            <i></i> 
+                                            <span></span>
+                                        </label>
+                                    </td> 
+                                    <td> 
+                                        Sprungzonen
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <label class="custom-check">
+                                            <input type="checkbox" name="liquor" checked/>
+                                            <i></i> 
+                                            <span></span>
+                                        </label>
+                                    </td>  
+                                    <td> 
+                                        Liquor-Shops
+                                    </td>
+                                </tr>
+                            </div>
+                        </table>    
+                    </div>
+                    
+                    <div id="toolPanelButton">
+                        <i class="fa fa-cogs"></i>   
+                    </div>
+                </div>
+            </div>  
+        </div>
+        
+        <footer>
+            Deutsche Flugsicherung GmbH    
+        </footer>    
+    <!--   
+    <div ng-controller="joinSessionController">
 		<table>
 			<tr ng-repeat="workspace in workspaces">
 				<td><button ng-disabled="{{!workspace.selectable}}" ng-click="{{workspace.action}}(workspace.workspace_name)" ng-init="count=0">{{workspace.action}}</button>
@@ -26,6 +216,7 @@
     </div>
   </div>
 </div>
+-->
 <script src="@routes.Assets.at("javascripts/joinSessionController.js")" type="text/javascript"></script>
 <script src="@routes.Assets.at("third/jquery/jquery-min.js")" type="text/javascript"></script>
   

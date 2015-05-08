@@ -1,0 +1,115 @@
+@import 'libs/_theme.less';
+
+body {
+    font-family:				@defaultFont;
+    font-size:					24px;
+}
+
+.bodybkg {
+    background:					@backgroundPicture;
+}
+
+.header {
+	  box-sizing:					border-box;
+	  padding:					  10px;
+	  z-index:					  1;
+	  background-color:		@headerDark;
+}
+
+.container {
+  	width: 						  25em;
+  	margin-left:				auto;
+  	margin-right:				auto;
+}
+      
+.waitingRoom {
+    position:           absolute;
+	  font-size:				  1em;
+    background:					@backgroundPicture;
+    display: 					  flex;
+  	width:						  100%;
+    height:						  94vH;
+    left:						    0em;
+    top:                1.5em;
+}
+
+.exerciseMenu {
+    background-color:	  @lightGray;
+    color:						  white;
+    top:						    0.5em;
+    left:						    1.8em;
+    text-align:				  left;
+    border-radius:		  1em;
+    opacity:					  1;
+    flex:						    6 0 0;
+}
+
+.chatRoom {
+    text-align:					center;
+    background-color:		@chatRoomPanelColor;
+    top:						    0.5em;
+    border-radius:			1em;
+    opacity:					  0.85;
+    flex:						    4 0 0;
+}
+
+footer {
+    position:           fixed;
+    bottom:             0em;
+    left:               0em;
+    padding-bottom:     0.5em;
+    font-size:          0.5em;
+    background-color:   @headerDark;
+    min-height:         1.5em;
+    max-height:         1.5em;
+    width:              100%;
+    color:              white;
+    text-align:         center;
+}
+
+table {
+    text-align:					center;
+}
+
+.exercise {
+	  min-width:					18em;
+	  text-align:					left;
+	  padding-top:        1em;
+	  color:              @newsimBlue;
+}
+
+.instance {
+    min-width:					12em;
+	  text-align:					left;
+	  padding-left:       1em;
+	  color:              #FFFFFF;
+}
+
+.button {
+    padding-top:        1em;
+    text-align:         center;
+    text-decoration:    none;
+}
+
+.share {
+    padding-left:       1em;
+}
+
+/*
+.startButton, .joinButton {
+	  background:				  @headerDark;
+	  border-radius:			0.5em;
+	  color:						  white;
+	  text-decoration:		none;
+	  text-align:				  center;
+	  display:					  inline-block;  
+	  min-width:					3em;
+	  min-height:				  0.3em;
+	  border:						  0.01em solid white;
+    float:						  left;
+}
+*/
+
+      
+  
+

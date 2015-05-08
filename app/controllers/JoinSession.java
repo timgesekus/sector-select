@@ -47,7 +47,6 @@ public class JoinSession extends Controller
       .setOwneringUserId(userName)
       .build();
 
-    // return ok(views.html.joinSession.render(sessionId));
     Future<Object> startExerciseAnswer = ask(
       sessionService,
       startExercise,
@@ -73,10 +72,12 @@ public class JoinSession extends Controller
 
   public Result joinSession(SessionStarted sessionStarted)
   {
+    String userName = session("userName");
     return ok(views.html.joinSession.render(
       sessionStarted.getSessionId(),
       sessionStarted.getChatId(),
-      sessionStarted.getWorkspacesId()));
+      sessionStarted.getWorkspacesId(),
+      userName));
 
   }
 

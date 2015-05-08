@@ -1,0 +1,62 @@
+@import 'libs/_theme.less';
+
+body {
+    font-size:			24px;
+    font-family:		Verdana, serif;
+}
+
+.bodybkg {
+    width: 100%; 
+    height: 100%;
+    position: absolute; 
+    top: 0; 
+    left: 0;
+    background:			url('../images/simbackground.png');
+}
+
+.container {
+  width:				20em;
+  margin-left:			auto;
+  margin-right:			auto;
+  background-color:		@loginContainerColor;
+  opacity:				0.85;
+}
+      
+
+.loginform {
+    font-family:		@defaultFont;
+    font-size:			@defaultFontSize;
+    width:				12em;
+    margin:				2.5em auto;
+    padding:			0.5em;
+    position:			relative;
+    color:				@loginButtonFontColor;
+}
+
+.loginform h2 {
+    font-size:			1em;
+    padding-bottom:		0.5em;
+}
+
+.loginform input[type=text],
+.loginform input[type=password] {
+    font-size:			0.5em;
+    color:				@loginFontColor;
+    width:				100%;    
+    padding:			0.66em 0.33em 0.66em 0.85em;
+    margin-bottom:		1.25em;
+    background:			rgba(0,0,0,0.15);
+    border:				0.1em solid @loginInputBorderColor;
+    border-radius:		0.333em;
+}
+
+.loginform input[type=submit] {
+    font-size:			0.666em;
+    font-weight:		bold;
+    color:				@loginButtonFontColor;
+    width:				100%;
+    padding:			0.5em 0.3em;
+    background:			linear-gradient(@loginButtonGradientOne, @loginButtonGradientTwo);
+    border:				0.1em solid @loginInputBorderColor;
+    border-radius:		1em;
+}

@@ -35,7 +35,7 @@ public class ExerciseSelection extends Controller
   public static Result exerciseSelect()
   {
     play.Logger.info("render exercise selec");
-    return ok(views.html.exerciseSelect.render("Select exercise."));
+    return ok(views.html.exerciseSelect.render("Select exercise.", session("userName")));
   }
 
   public WebSocket<String> exerciseSelectionWS()
