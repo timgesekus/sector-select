@@ -90,28 +90,37 @@
                     </div>
                 </div>
             
-                <div id="simChatPanelGroup">
-                                           
+              <div id="simChatPanelGroup">
+                    <div id="simChatPanel">
+               <!--         <i id="simChatContent" class="fa fa-weixin fa-2x"></i>  -->  
                         
-                    <div id="simChatPanel" ng-controller="chatController">
-                        <i id="simChatContent" class="fa fa-weixin fa-2x">
-                        <ul>
-                            <li ng-repeat="line in chat  track by $index">
-                               {{line}}
-                            </li>
-                            <li>   <input ng-keyup="($event.which === 13)?submit():0" ng-model="input"> <li>
-                           </ul>
-                        </i>          
-                         
-                          
-                           
-                      
+                        <div id="simChatContent" ng-controller="chatController">
+                            <div class="chatUsers">
+                                Members
+                                <p>
+                                <ul id="members">
+                                </ul>
+                                </p>
+                            </div>
+                            
+                            <div class="chatMessages">
+                                <div id="messages">
+                                <div ng-repeat="line in chat  track by $index">
+                                    {{line}}
+                                  </div>
+                                </div>
+                            </div>
+                            
+                            <textarea id="talk" class="messageSender" ng-keyup="($event.which === 13)?submit():0" ng-model="input"></textarea> 
+                        </div>
+                                
                     </div>
+                    
                     <div id="simChatPanelButton">
-                      <i class="fa fa-weixin"></i>     
+                        <i class="fa fa-weixin"></i>   
                     </div>
                 </div>
-                
+                         
                 <div id="toolPanelGroup">
                     <div id="toolPanel">
                         <table id="toolTable"> 

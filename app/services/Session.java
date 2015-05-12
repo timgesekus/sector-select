@@ -128,23 +128,33 @@ public class Session extends AbstractActor
     if (workspacesCreated.getWorkspacesId().equals(workspacesId))
     {
       isWorkspacesCreated = true;
-      AddWorkspace addWorkspace = AddWorkspace
-        .newBuilder()
-        .setWorkspacesId(workspacesId)
-        .setWorkspaceName("WURL")
-        .build();
-      logger.info("Sending stuff {}", JsonFormat.printToString(addWorkspace));
-      eventBus.publish(Topic.WORKSPACES_COMMAND, addWorkspace);
-      addWorkspace = AddWorkspace
-        .newBuilder()
-        .setWorkspacesId(workspacesId)
-        .setWorkspaceName("WURH")
-        .build();
-      logger.info("Sending stuff {}", JsonFormat.printToString(addWorkspace));
-      eventBus.publish(Topic.WORKSPACES_COMMAND, addWorkspace);
+      createDummyWorkspaces();
 
       sendSessionStartedIfComplete();
     }
+  }
+
+  private void createDummyWorkspaces()
+  {
+    AddWorkspace addWorkspace = AddWorkspace
+      .newBuilder()
+      .setWorkspacesId(workspacesId)
+      .setWorkspaceName("WURL")
+      .build();
+    eventBus.publish(Topic.WORKSPACES_COMMAND, addWorkspace);
+    addWorkspace = AddWorkspace
+      .newBuilder()
+      .setWorkspacesId(workspacesId)
+      .setWorkspaceName("WURH")
+      .build();
+    eventBus.publish(Topic.WORKSPACES_COMMAND, addWorkspace);
+    addWorkspace = AddWorkspace
+        .newBuilder()
+        .setWorkspacesId(workspacesId)
+        .setWorkspaceName("NATL")
+        .build();
+      eventBus.publish(Topic.WORKSPACES_COMMAND, addWorkspace);
+
   }
 
   private void sendSessionStartedIfComplete()

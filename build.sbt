@@ -16,6 +16,11 @@ Seq(PB.protobufSettings: _*)
 
 version in PB.protobufConfig := "2.6.1"
 
+resolvers ++= Seq (
+  "Tei repro" at "http://lgnjiboo.srv.dfs.local/artifactory/repo1",
+  "Local libs" at "http://lgnjiboo.srv.dfs.local/artifactory/libs-releases"
+)
+
 libraryDependencies ++= Seq(
   javaJdbc,
   javaEbean,
@@ -24,7 +29,8 @@ libraryDependencies ++= Seq(
   "be.objectify" %% "deadbolt-java" % "2.3.1",
   "com.google.inject" % "guice" % "3.0",
   "com.google.protobuf" % "protobuf-java" % "2.6.1",
-  "com.googlecode.protobuf-java-format" % "protobuf-java-format" % "1.2"
+  "com.googlecode.protobuf-java-format" % "protobuf-java-format" % "1.2",
+  "de.dfs.utils" % "config" % "1.0.0"
 )
 
 EclipseKeys.withSource := true

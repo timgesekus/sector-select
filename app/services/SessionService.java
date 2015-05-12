@@ -67,11 +67,6 @@ public class SessionService extends AbstractActor
       .build());
   }
 
-  public void unhandled(Object message)
-  {
-    logger.info("Received unknown message {} {}", message.getClass(), message);
-  }
-
   private void subscribteToChatServiceCommands()
   {
     logger.info("Subscribing to chat commands");
@@ -85,25 +80,10 @@ public class SessionService extends AbstractActor
     String sessionId = owner + "-" + exerciseId;
     if (sessions.containsKey(sessionId))
     {
-      ActorRef session = sessions.get(sessionId);
-      RequestSessionStartedMessage requestSessionStartedMessage = RequestSessionStartedMessage
-        .newBuilder()
-        .setSessionId(sessionId)
-        .build();
-      session.forward(requestSessionStartedMessage, getContext());
+      forwardRequestSessionStartedMessageToSession(sessionId);
     } else
     {
-      Props sessionProps = Session.props(
-        sessionId,
-        exerciseId,
-        owner,
-        sender(),
-        eventBus);
-      ActorRef session = getContext().actorOf(
-        sessionProps,
-        "session-" + sessionId);
-      sessions.put(sessionId, session);
-
+      createNewSession(owner, exerciseId, sessionId);
     }
   }
 
@@ -115,29 +95,6 @@ public class SessionService extends AbstractActor
       ActorRef sessionToStop = sessions.get(sessionIdToStop);
       context().stop(sessionToStop);
     }
-  }
-
-  private void restoreSessions(RestoreSessions restoreSessions)
-  {
-    logger.info("Received restoration request:{}", sender() );
-    events.stream().forEach(event -> {
-      sender().tell(event, self());
-      logger.info("Sending message:{}", event ); 
-    });
-    sender().tell(RestoreSessionsCompleted.newBuilder().build(), self());
-  }
-
-  private void sessionStarted(SessionStarted sessionStarted)
-  {
-    logger.info("Session started");
-    events.add(sessionStarted);
-    eventBus.publish(Topic.SESSION_SERVICE_EVENT, sessionStarted);
-  }
-
-  private void sessionStopped(SessionStopped sessionStopped)
-  {
-    events.add(sessionStopped);
-    eventBus.publish(Topic.SESSION_SERVICE_EVENT, sessionStopped);
   }
 
   private void requestSessionStartMessage(
@@ -158,5 +115,57 @@ public class SessionService extends AbstractActor
         .stream()
         .forEach(session -> logger.info("Known session {}", session));
     }
+  }
+
+  private void sessionStarted(SessionStarted sessionStarted)
+  {
+    logger.info("Session started");
+    events.add(sessionStarted);
+    eventBus.publish(Topic.SESSION_SERVICE_EVENT, sessionStarted);
+  }
+
+  private void sessionStopped(SessionStopped sessionStopped)
+  {
+    events.add(sessionStopped);
+    eventBus.publish(Topic.SESSION_SERVICE_EVENT, sessionStopped);
+  }
+
+  private void restoreSessions(RestoreSessions restoreSessions)
+  {
+    logger.info("Received restoration request:{}", sender() );
+    events.stream().forEach(event -> {
+      sender().tell(event, self());
+      logger.info("Sending message:{}", event ); 
+    });
+    sender().tell(RestoreSessionsCompleted.newBuilder().build(), self());
+  }
+
+  public void unhandled(Object message)
+  {
+    logger.info("Received unknown message {} {}", message.getClass(), message);
+  }
+
+  private void forwardRequestSessionStartedMessageToSession(String sessionId)
+  {
+    ActorRef session = sessions.get(sessionId);
+    RequestSessionStartedMessage requestSessionStartedMessage = RequestSessionStartedMessage
+      .newBuilder()
+      .setSessionId(sessionId)
+      .build();
+    session.forward(requestSessionStartedMessage, getContext());
+  }
+  
+  private void createNewSession(String owner, String exerciseId, String sessionId)
+  {
+    Props sessionProps = Session.props(
+      sessionId,
+      exerciseId,
+      owner,
+      sender(),
+      eventBus);
+    ActorRef session = getContext().actorOf(
+      sessionProps,
+      "session-" + sessionId);
+    sessions.put(sessionId, session);
   }
 }

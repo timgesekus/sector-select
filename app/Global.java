@@ -9,6 +9,8 @@ import com.google.inject.Injector;
 import com.google.inject.Key;
 import com.google.inject.name.Names;
 
+import de.dfs.utils.config.injector.TypeSafeConfigInjectorModule;
+
 public class Global extends GlobalSettings
 {
   private static final Injector INJECTOR = createInjector();
@@ -23,7 +25,7 @@ public class Global extends GlobalSettings
   private static Injector createInjector()
   {
     Logger.info("Creating injector");
-    return Guice.createInjector(new ActorModule());
+    return Guice.createInjector(new ActorModule(), new TypeSafeConfigInjectorModule(play.Play.application().configuration()));
   }
 
   @Override
